@@ -93,32 +93,32 @@ export function FicheView({ id, onBack, onDeleted }: Props) {
         </button>
       </div>
 
-      <div className="text-[12px] tracking-[1px] uppercase opacity-70 mb-1.5">
+      <div className="text-[13px] tracking-[1px] uppercase opacity-70 mb-2">
         {coursNom(fiche.cours)}
       </div>
       <h1
-        className="text-[22px] sm:text-[28px] italic m-0 mb-5 break-words"
+        className="text-[30px] sm:text-[40px] italic m-0 mb-7 break-words leading-tight"
         style={{ fontFamily: 'var(--font-display)' }}
       >
         {fiche.titre}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {SECTIONS.map(s => (
           <section
             key={s.key as string}
-            className="bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded-md px-4 py-3.5"
+            className="bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded-md px-5 py-4"
           >
-            <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-2">{s.label}</div>
+            <div className="text-[12px] tracking-[2px] uppercase opacity-70 mb-3">{s.label}</div>
             <div
-              className="fiche-content"
+              className="fiche-content text-[15px]"
               dangerouslySetInnerHTML={{ __html: (fiche[s.key] as string) || '<p class="opacity-50 italic">—</p>' }}
             />
           </section>
         ))}
       </div>
 
-      <div className="mt-5 pt-3.5 border-t border-[var(--color-ink)]/30 text-[12px] italic opacity-70">
+      <div className="mt-7 pt-4 border-t border-[var(--color-ink)]/30 text-[13px] italic opacity-70">
         Dernière modification — {dateStr}
       </div>
     </div>

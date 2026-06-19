@@ -44,50 +44,50 @@ export function FigurationList({ cours, onOpen, onCreate, refreshKey, onChanged 
 
   return (
     <div>
-      <div className="flex flex-wrap justify-between items-center gap-2 mb-3.5">
-        <h2 className="text-xl sm:text-2xl italic m-0" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
+        <h2 className="text-[28px] sm:text-[34px] italic m-0 leading-tight" style={{ fontFamily: 'var(--font-display)' }}>
           {coursNom(cours)}
         </h2>
         <button
           onClick={onCreate}
-          className="flex items-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-3 sm:px-3.5 py-2 rounded text-[13px] hover:opacity-90"
+          className="flex items-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-4 py-2.5 rounded text-[14px] hover:opacity-90"
         >
-          <Plus size={14} /> Nouvelle figuration
+          <Plus size={16} /> Nouvelle figuration
         </button>
       </div>
 
-      <div className="relative mb-4">
+      <div className="relative mb-5">
         <Search
-          size={16}
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-50"
+          size={18}
+          className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50"
         />
         <input
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Rechercher une figuration..."
-          className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 pl-9 text-[13px] outline-none focus:border-[var(--color-ink)]"
+          className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2.5 pl-10 text-[15px] outline-none focus:border-[var(--color-ink)]"
           style={{ fontFamily: 'var(--font-serif)' }}
         />
       </div>
 
       {loading ? (
-        <div className="text-[13px] opacity-60 italic">Chargement...</div>
+        <div className="text-[14px] opacity-60 italic">Chargement...</div>
       ) : filtered.length === 0 ? (
-        <div className="text-[13px] opacity-60 italic py-6 text-center">
+        <div className="text-[14px] opacity-60 italic py-8 text-center">
           {items.length === 0
             ? 'Aucune figuration dans ce cours. Créez-en une.'
             : 'Aucun résultat pour cette recherche.'}
         </div>
       ) : (
-        <ul className="flex flex-col gap-1.5 list-none p-0 m-0">
+        <ul className="flex flex-col gap-2 list-none p-0 m-0">
           {filtered.map(f => (
             <li
               key={f.id}
               onClick={() => onOpen(f.id)}
-              className="bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded-md px-3.5 py-3 flex justify-between items-center cursor-pointer hover:border-[var(--color-ink)] transition-colors"
+              className="bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded-md px-4 py-3.5 flex justify-between items-center cursor-pointer hover:border-[var(--color-ink)] transition-colors"
             >
-              <div className="text-[15px] italic" style={{ fontFamily: 'var(--font-display)' }}>
+              <div className="text-[18px] italic" style={{ fontFamily: 'var(--font-display)' }}>
                 {f.titre}
               </div>
               <div className="flex items-center gap-3">
@@ -99,9 +99,9 @@ export function FigurationList({ cours, onOpen, onCreate, refreshKey, onChanged 
                   className="opacity-50 hover:opacity-100 hover:text-[var(--color-alert)]"
                   title="Supprimer"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={18} />
                 </button>
-                <ChevronRight size={16} className="opacity-40" />
+                <ChevronRight size={18} className="opacity-40" />
               </div>
             </li>
           ))}

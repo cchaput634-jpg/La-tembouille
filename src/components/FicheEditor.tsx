@@ -83,14 +83,14 @@ export function FicheEditor({ mode, cours, fiche, onCancel, onSaved }: Props) {
         onChange={e => setTitre(e.target.value)}
         placeholder="Titre de la figuration"
         autoFocus={mode === 'create'}
-        className="w-full bg-transparent border-0 border-b border-[var(--color-ink)]/30 text-[22px] sm:text-[28px] italic mb-5 outline-none focus:border-[var(--color-ink)] pb-1 placeholder:opacity-40"
+        className="w-full bg-transparent border-0 border-b border-[var(--color-ink)]/30 text-[30px] sm:text-[40px] italic mb-7 outline-none focus:border-[var(--color-ink)] pb-2 placeholder:opacity-40 leading-tight"
         style={{ fontFamily: 'var(--font-display)' }}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {SECTIONS.map(s => (
           <section key={s.key as string}>
-            <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-2">{s.label}</div>
+            <div className="text-[12px] tracking-[2px] uppercase opacity-70 mb-3">{s.label}</div>
             <RichEditor
               value={draft[s.key as string]}
               onChange={html => setDraft(prev => ({ ...prev, [s.key as string]: html }))}

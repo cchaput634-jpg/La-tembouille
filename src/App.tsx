@@ -38,21 +38,21 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-3 md:p-6">
-      <div className="w-full bg-[var(--color-parchment)] border border-[var(--color-parchment-line)] rounded-xl px-4 py-5 md:px-10 md:py-8">
-        <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pb-3 sm:pb-3.5 border-b-[1.5px] border-[var(--color-ink)] mb-4 sm:mb-5">
+      <div className="w-full min-h-[calc(100vh-1.5rem)] md:min-h-[calc(100vh-3rem)] bg-[var(--color-parchment)] border border-[var(--color-parchment-line)] rounded-xl px-5 py-7 md:px-12 md:py-10">
+        <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 pb-5 sm:pb-6 border-b-[1.5px] border-[var(--color-ink)] mb-7 sm:mb-9">
           <button
             onClick={() => setView({ kind: 'list' })}
-            className="text-[22px] sm:text-[26px] italic m-0 bg-transparent border-0 cursor-pointer hover:opacity-80 text-left"
+            className="text-[30px] sm:text-[40px] italic m-0 bg-transparent border-0 cursor-pointer hover:opacity-80 text-left leading-tight"
             style={{ fontFamily: 'var(--font-display)', color: 'var(--color-ink)' }}
           >
             La Tambouille d'Elixir
           </button>
-          <div className="text-[12px] opacity-70 italic">
+          <div className="text-[13px] opacity-70 italic">
             {total} figuration{total > 1 ? 's' : ''}
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3 md:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-5 md:gap-8">
           <Sidebar
             active={activeCours}
             counts={counts}

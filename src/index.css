@@ -27,9 +27,9 @@ body {
 
 .tiptap {
   outline: none;
-  min-height: 80px;
-  line-height: 1.6;
-  font-size: 14px;
+  min-height: 100px;
+  line-height: 1.65;
+  font-size: 15px;
 }
 
 .tiptap p {
@@ -40,20 +40,12 @@ body {
   margin-bottom: 0;
 }
 
-.tiptap img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 4px;
-  margin: 6px 0;
-}
-
 .tiptap [style*="color"] {
   font-weight: 500;
 }
 
 .fiche-content {
-  line-height: 1.6;
-  font-size: 14px;
+  line-height: 1.65;
 }
 
 .fiche-content p {
@@ -62,11 +54,4 @@ body {
 
 .fiche-content p:last-child {
   margin-bottom: 0;
-}
-
-.fiche-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 4px;
-  margin: 6px 0;
 }
