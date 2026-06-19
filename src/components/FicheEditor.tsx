@@ -13,13 +13,13 @@ interface Props {
   onSaved: (saved: Figuration) => void
 }
 
-const SECTIONS: Array<{ key: keyof Figuration; label: string; allowImages?: boolean }> = [
+const SECTIONS: Array<{ key: keyof Figuration; label: string }> = [
   { key: 'deroule', label: 'Déroulé de la figuration' },
   { key: 'info_a_savoir', label: 'Info à savoir' },
   { key: 'type_ped', label: 'Type de Ped' },
   { key: 'item_a_demander', label: 'Item à demander' },
   { key: 'lieu', label: 'Lieu' },
-  { key: 'autre', label: 'Autre', allowImages: true },
+  { key: 'autre', label: 'Autre' },
 ]
 
 export function FicheEditor({ mode, cours, fiche, onCancel, onSaved }: Props) {
@@ -90,16 +90,10 @@ export function FicheEditor({ mode, cours, fiche, onCancel, onSaved }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {SECTIONS.map(s => (
           <section key={s.key as string}>
-            <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-2">
-              {s.label}
-              {s.allowImages && (
-                <span className="opacity-50 normal-case ml-1 tracking-normal">+ images</span>
-              )}
-            </div>
+            <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-2">{s.label}</div>
             <RichEditor
               value={draft[s.key as string]}
               onChange={html => setDraft(prev => ({ ...prev, [s.key as string]: html }))}
-              allowImages={s.allowImages}
             />
           </section>
         ))}

@@ -36,12 +36,4 @@ export const api = {
     fetch(`${BASE}/figurations/${id}`, { method: 'DELETE' }).then(r => {
       if (!r.ok) throw new Error('Suppression échouée')
     }),
-
-  uploadImage: async (file: File): Promise<{ url: string }> => {
-    const fd = new FormData()
-    fd.append('file', file)
-    const res = await fetch(`${BASE}/upload`, { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload échoué')
-    return res.json()
-  },
 }

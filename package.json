@@ -7,14 +7,13 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "pages:dev": "wrangler pages dev dist --d1=DB --r2=IMAGES",
+    "pages:dev": "wrangler pages dev dist --d1=DB",
     "db:init:local": "wrangler d1 execute tambouille-db --local --file=./schema.sql",
     "db:init:remote": "wrangler d1 execute tambouille-db --remote --file=./schema.sql"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
     "@tiptap/extension-color": "^2.10.3",
-    "@tiptap/extension-image": "^2.10.3",
     "@tiptap/extension-text-style": "^2.10.3",
     "@tiptap/react": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",

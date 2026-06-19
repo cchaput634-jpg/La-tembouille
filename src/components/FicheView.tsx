@@ -14,13 +14,13 @@ interface Props {
   onDeleted: () => void
 }
 
-const SECTIONS: Array<{ key: keyof Figuration; label: string; allowImages?: boolean }> = [
+const SECTIONS: Array<{ key: keyof Figuration; label: string }> = [
   { key: 'deroule', label: 'Déroulé de la figuration' },
   { key: 'info_a_savoir', label: 'Info à savoir' },
   { key: 'type_ped', label: 'Type de Ped' },
   { key: 'item_a_demander', label: 'Item à demander' },
   { key: 'lieu', label: 'Lieu' },
-  { key: 'autre', label: 'Autre', allowImages: true },
+  { key: 'autre', label: 'Autre' },
 ]
 
 export function FicheView({ id, onBack, onDeleted }: Props) {
