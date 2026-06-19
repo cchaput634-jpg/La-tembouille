@@ -1,3 +1,8 @@
 name = "tambouille"
 compatibility_date = "2024-09-23"
 pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tambouille-db"
+database_id = "4dd66cd2-2076-4f7e-a427-722d8a2f1780"
