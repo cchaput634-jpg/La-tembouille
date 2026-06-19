@@ -37,12 +37,12 @@ export default function App() {
   const openCreate = () => setView({ kind: 'create' })
 
   return (
-    <div className="min-h-screen p-6 md:p-8">
-      <div className="max-w-[1100px] mx-auto bg-[var(--color-parchment)] border border-[var(--color-parchment-line)] rounded-xl px-6 py-6 md:px-8 md:py-7">
-        <header className="flex justify-between items-center pb-3.5 border-b-[1.5px] border-[var(--color-ink)] mb-5">
+    <div className="min-h-screen p-3 md:p-6">
+      <div className="w-full bg-[var(--color-parchment)] border border-[var(--color-parchment-line)] rounded-xl px-4 py-5 md:px-10 md:py-8">
+        <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 pb-3 sm:pb-3.5 border-b-[1.5px] border-[var(--color-ink)] mb-4 sm:mb-5">
           <button
             onClick={() => setView({ kind: 'list' })}
-            className="text-[26px] italic m-0 bg-transparent border-0 cursor-pointer hover:opacity-80"
+            className="text-[22px] sm:text-[26px] italic m-0 bg-transparent border-0 cursor-pointer hover:opacity-80 text-left"
             style={{ fontFamily: 'var(--font-display)', color: 'var(--color-ink)' }}
           >
             La Tambouille d'Elixir
@@ -52,7 +52,7 @@ export default function App() {
           </div>
         </header>
 
-        <div className="grid grid-cols-[180px_1fr] gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-3 md:gap-5">
           <Sidebar
             active={activeCours}
             counts={counts}

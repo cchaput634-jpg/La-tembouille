@@ -44,13 +44,13 @@ export function FigurationList({ cours, onOpen, onCreate, refreshKey, onChanged 
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-3.5">
-        <h2 className="text-2xl italic m-0" style={{ fontFamily: 'var(--font-display)' }}>
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-3.5">
+        <h2 className="text-xl sm:text-2xl italic m-0" style={{ fontFamily: 'var(--font-display)' }}>
           {coursNom(cours)}
         </h2>
         <button
           onClick={onCreate}
-          className="flex items-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-3.5 py-2 rounded text-[13px] hover:opacity-90"
+          className="flex items-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-3 sm:px-3.5 py-2 rounded text-[13px] hover:opacity-90"
         >
           <Plus size={14} /> Nouvelle figuration
         </button>

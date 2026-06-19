@@ -72,22 +72,22 @@ export function FicheView({ id, onBack, onDeleted }: Props) {
 
   return (
     <div>
-      <div className="flex justify-end gap-2 mb-4">
+      <div className="flex flex-wrap justify-end gap-2 mb-4">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 border border-[var(--color-ink)] px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
+          className="flex items-center gap-1.5 border border-[var(--color-ink)] px-3 sm:px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
         >
           <ArrowLeft size={14} /> Retour
         </button>
         <button
           onClick={() => setEditing(true)}
-          className="flex items-center gap-1.5 border border-[var(--color-ink)] px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
+          className="flex items-center gap-1.5 border border-[var(--color-ink)] px-3 sm:px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
         >
           <Pencil size={14} /> Éditer
         </button>
         <button
           onClick={remove}
-          className="flex items-center gap-1.5 border border-[var(--color-alert)] text-[var(--color-alert)] px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
+          className="flex items-center gap-1.5 border border-[var(--color-alert)] text-[var(--color-alert)] px-3 sm:px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
         >
           <Trash2 size={14} /> Supprimer
         </button>
@@ -97,7 +97,7 @@ export function FicheView({ id, onBack, onDeleted }: Props) {
         {coursNom(fiche.cours)}
       </div>
       <h1
-        className="text-[28px] italic m-0 mb-5"
+        className="text-[22px] sm:text-[28px] italic m-0 mb-5 break-words"
         style={{ fontFamily: 'var(--font-display)' }}
       >
         {fiche.titre}
