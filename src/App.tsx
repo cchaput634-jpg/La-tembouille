@@ -1,10 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { Sidebar } from './components/Sidebar'
 import { FigurationList } from './components/FigurationList'
 import { FicheView } from './components/FicheView'
-import { FicheEditor } from './components/FicheEditor'
 import { COURS } from './data/cours'
 import { api } from './lib/api'
+
+const FicheEditor = lazy(() =>
+  import('./components/FicheEditor').then(m => ({ default: m.FicheEditor }))
+)
+
+const EditorFallback = () => (
+  <div className="text-[13px] opacity-60 italic">Chargement de l'éditeur...</div>
+)
 
 type View = { kind: 'list' } | { kind: 'create' } | { kind: 'fiche'; id: string }
 
@@ -66,15 +73,17 @@ export default function App() {
               />
             )}
             {view.kind === 'create' && (
-              <FicheEditor
-                mode="create"
-                cours={activeCours}
-                onCancel={() => setView({ kind: 'list' })}
-                onSaved={created => {
-                  setRefreshKey(k => k + 1)
-                  setView({ kind: 'fiche', id: created.id })
-                }}
-              />
+              <Suspense fallback={<EditorFallback />}>
+                <FicheEditor
+                  mode="create"
+                  cours={activeCours}
+                  onCancel={() => setView({ kind: 'list' })}
+                  onSaved={created => {
+                    setRefreshKey(k => k + 1)
+                    setView({ kind: 'fiche', id: created.id })
+                  }}
+                />
+              </Suspense>
             )}
             {view.kind === 'fiche' && (
               <FicheView

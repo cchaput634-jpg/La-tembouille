@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { coursNom } from '@/data/cours'
 import type { Figuration } from '@/lib/types'
-import { FicheEditor } from './FicheEditor'
+
+const FicheEditor = lazy(() =>
+  import('./FicheEditor').then(m => ({ default: m.FicheEditor }))
+)
 
 interface Props {
   id: string
@@ -50,16 +53,18 @@ export function FicheView({ id, onBack, onDeleted }: Props) {
 
   if (editing) {
     return (
-      <FicheEditor
-        mode="edit"
-        cours={fiche.cours}
-        fiche={fiche}
-        onCancel={() => setEditing(false)}
-        onSaved={updated => {
-          setFiche(updated)
-          setEditing(false)
-        }}
-      />
+      <Suspense fallback={<div className="text-[13px] opacity-60 italic">Chargement de l'éditeur...</div>}>
+        <FicheEditor
+          mode="edit"
+          cours={fiche.cours}
+          fiche={fiche}
+          onCancel={() => setEditing(false)}
+          onSaved={updated => {
+            setFiche(updated)
+            setEditing(false)
+          }}
+        />
+      </Suspense>
     )
   }
 
