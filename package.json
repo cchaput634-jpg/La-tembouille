@@ -1,0 +1,36 @@
+{
+  "name": "tambouille",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "pages:dev": "wrangler pages dev dist --d1=DB --r2=IMAGES",
+    "db:init:local": "wrangler d1 execute tambouille-db --local --file=./schema.sql",
+    "db:init:remote": "wrangler d1 execute tambouille-db --remote --file=./schema.sql"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
+    "@tiptap/extension-color": "^2.10.3",
+    "@tiptap/extension-image": "^2.10.3",
+    "@tiptap/extension-text-style": "^2.10.3",
+    "@tiptap/react": "^2.10.3",
+    "@tiptap/starter-kit": "^2.10.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.460.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260610.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "^4.3.0",
+    "typescript": "~5.6.0",
+    "vite": "^8.0.12",
+    "wrangler": "^4.99.0"
+  }
+}

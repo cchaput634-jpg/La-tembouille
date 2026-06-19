@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-parchment: #F5EDD8;
+  --color-parchment-soft: #FBF6E8;
+  --color-parchment-line: #D8C9A3;
+  --color-ink: #1A2547;
+  --color-ink-soft: #2B3760;
+  --color-alert: #B33A3A;
+
+  --font-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.tiptap {
+  outline: none;
+  min-height: 80px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.tiptap p {
+  margin: 0 0 0.5rem;
+}
+
+.tiptap p:last-child {
+  margin-bottom: 0;
+}
+
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 6px 0;
+}
+
+.tiptap [style*="color"] {
+  font-weight: 500;
+}
+
+.fiche-content {
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.fiche-content p {
+  margin: 0 0 0.5rem;
+}
+
+.fiche-content p:last-child {
+  margin-bottom: 0;
+}
+
+.fiche-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 6px 0;
+}
