@@ -1,6 +1,6 @@
 import type { Env } from '../../env'
 
-const FIELDS = ['date', 'heure', 'cours', 'figuration_id', 'type'] as const
+const FIELDS = ['date', 'heure', 'cours', 'professeur', 'figuration_id', 'type'] as const
 type Field = typeof FIELDS[number]
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, params }) => {

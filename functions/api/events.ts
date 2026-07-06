@@ -4,6 +4,7 @@ interface Body {
   date?: string
   heure?: '21:00' | '21:45'
   cours?: string
+  professeur?: string
   figuration_id?: string | null
   type?: 'mapping_only' | 'figuration_only' | 'tp_figuration'
 }
@@ -31,10 +32,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
   }
   const id = crypto.randomUUID()
   await env.DB.prepare(
-    `INSERT INTO events (id, date, heure, cours, figuration_id, type)
-     VALUES (?, ?, ?, ?, ?, ?)`
+    `INSERT INTO events (id, date, heure, cours, professeur, figuration_id, type)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(id, body.date, body.heure, body.cours, body.figuration_id ?? null, body.type)
+    .bind(
+      id,
+      body.date,
+      body.heure,
+      body.cours,
+      body.professeur ?? '',
+      body.figuration_id ?? null,
+      body.type
+    )
     .run()
   const row = await env.DB.prepare('SELECT * FROM events WHERE id = ?').bind(id).first()
   return Response.json(row)

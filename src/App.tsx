@@ -140,7 +140,12 @@ export default function App() {
             </main>
           </div>
         ) : (
-          <CalendrierView />
+          <CalendrierView
+            onOpenFigu={id => {
+              setSection('grimoire')
+              setView({ kind: 'fiche', id })
+            }}
+          />
         )}
       </div>
     </div>

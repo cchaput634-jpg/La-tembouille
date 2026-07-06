@@ -33,6 +33,7 @@ export interface CalendarEvent {
   date: string
   heure: EventHeure
   cours: string
+  professeur: string
   figuration_id: string | null
   type: EventType
   created_at: number
@@ -42,6 +43,7 @@ export interface EventInput {
   date: string
   heure: EventHeure
   cours: string
+  professeur?: string
   figuration_id?: string | null
   type: EventType
 }

@@ -15,6 +15,7 @@ export function EventForm({ date, onClose, onCreated }: Props) {
   const [dateVal, setDateVal] = useState(date)
   const [heure, setHeure] = useState<EventHeure>('21:00')
   const [cours, setCours] = useState<string>(COURS[0].slug)
+  const [professeur, setProfesseur] = useState<string>('')
   const [figurationId, setFigurationId] = useState<string>('')
   const [type, setType] = useState<EventType>('mapping_only')
   const [figurations, setFigurations] = useState<FigurationSummary[]>([])
@@ -35,6 +36,7 @@ export function EventForm({ date, onClose, onCreated }: Props) {
         date: dateVal,
         heure,
         cours,
+        professeur: professeur.trim(),
         figuration_id: figurationId || null,
         type,
       })
@@ -114,6 +116,20 @@ export function EventForm({ date, onClose, onCreated }: Props) {
                 <option key={c.slug} value={c.slug}>{c.nom}</option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+              Professeur
+            </label>
+            <input
+              type="text"
+              value={professeur}
+              onChange={e => setProfesseur(e.target.value)}
+              placeholder="Nom du professeur"
+              className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            />
           </div>
 
           <div>

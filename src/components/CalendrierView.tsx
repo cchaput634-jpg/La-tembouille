@@ -5,6 +5,11 @@ import { coursNom } from '@/data/cours'
 import { typeColor } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
+import { EventDetail } from './EventDetail'
+
+interface Props {
+  onOpenFigu: (id: string) => void
+}
 
 const DAY_LABELS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 const MONTH_NAMES = [
@@ -27,13 +32,14 @@ function daysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate()
 }
 
-export function CalendrierView() {
+export function CalendrierView({ onOpenFigu }: Props) {
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [formDate, setFormDate] = useState<string | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const monthStart = toISODate(year, month, 1)
@@ -82,16 +88,6 @@ export function CalendrierView() {
     const t = new Date()
     setYear(t.getFullYear())
     setMonth(t.getMonth())
-  }
-
-  const removeEvent = async (id: string) => {
-    if (!confirm('Supprimer cet événement ?')) return
-    try {
-      await api.events.remove(id)
-      setEvents(prev => prev.filter(e => e.id !== id))
-    } catch (e) {
-      alert(`Suppression échouée : ${(e as Error).message}`)
-    }
   }
 
   const offset = firstDayOffset(year, month)
@@ -174,11 +170,11 @@ export function CalendrierView() {
                     key={e.id}
                     onClick={ev => {
                       ev.stopPropagation()
-                      removeEvent(e.id)
+                      setSelectedEvent(e)
                     }}
                     className="text-left text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded text-white truncate hover:opacity-80"
                     style={{ backgroundColor: typeColor(e.type) }}
-                    title={`${e.heure} · ${coursNom(e.cours)} — clic pour supprimer`}
+                    title={`${e.heure} · ${coursNom(e.cours)}`}
                   >
                     <span className="font-semibold">{e.heure}</span>{' '}
                     <span className="hidden sm:inline">{coursNom(e.cours)}</span>
@@ -201,6 +197,21 @@ export function CalendrierView() {
           onCreated={() => {
             setFormDate(null)
             setRefreshKey(k => k + 1)
+          }}
+        />
+      )}
+
+      {selectedEvent && (
+        <EventDetail
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onDeleted={() => {
+            setSelectedEvent(null)
+            setRefreshKey(k => k + 1)
+          }}
+          onOpenFigu={id => {
+            setSelectedEvent(null)
+            onOpenFigu(id)
           }}
         />
       )}

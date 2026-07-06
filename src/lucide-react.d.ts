@@ -17,4 +17,5 @@ declare module 'lucide-react' {
   export const Image: LucideIcon
   export const Palette: LucideIcon
   export const Eraser: LucideIcon
+  export const BookOpen: LucideIcon
 }
