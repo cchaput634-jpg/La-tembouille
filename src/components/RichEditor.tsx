@@ -22,6 +22,25 @@ export function RichEditor({ value, onChange }: Props) {
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: { class: 'tiptap' },
+      handlePaste: (_view, event) => {
+        const items = event.clipboardData?.items
+        if (items) {
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+              event.preventDefault()
+              alert("Le collage d'images n'est pas supporté. Décrivez le contenu en texte.")
+              return true
+            }
+          }
+        }
+        return false
+      },
+      transformPastedText: text =>
+        text.replace(/data:[^;\s]+;base64,[A-Za-z0-9+/=]+/g, ''),
+      transformPastedHTML: html =>
+        html
+          .replace(/<img\b[^>]*>/gi, '')
+          .replace(/data:[^"';\s]+;base64,[A-Za-z0-9+/=]+/g, ''),
     },
   })
 
