@@ -11,12 +11,6 @@ interface Props {
 
 const RED = '#B33A3A'
 
-function cleanBinaryBlobs(input: string): string {
-  return input
-    .replace(/data:[^;\s]+;base64,[A-Za-z0-9+/=]+/g, '')
-    .replace(/[A-Za-z0-9+/=]{150,}/g, '')
-}
-
 export function RichEditor({ value, onChange }: Props) {
   const editor = useEditor({
     extensions: [
@@ -41,34 +35,7 @@ export function RichEditor({ value, onChange }: Props) {
         }
         return false
       },
-      transformPastedText: text => {
-        const cleaned = cleanBinaryBlobs(text)
-        if (cleaned.length < text.length - 50) {
-          setTimeout(
-            () =>
-              alert(
-                'Contenu binaire (image encodée) détecté et supprimé du collage.'
-              ),
-            0
-          )
-        }
-        return cleaned
-      },
-      transformPastedHTML: html => {
-        const cleaned = cleanBinaryBlobs(
-          html.replace(/<img\b[^>]*>/gi, '')
-        )
-        if (cleaned.length < html.length - 100) {
-          setTimeout(
-            () =>
-              alert(
-                'Contenu binaire (image encodée) détecté et supprimé du collage.'
-              ),
-            0
-          )
-        }
-        return cleaned
-      },
+      transformPastedHTML: html => html.replace(/<img\b[^>]*>/gi, ''),
     },
   })
 

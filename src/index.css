@@ -32,6 +32,8 @@ body {
   line-height: 1.65;
   font-size: 15px;
   font-weight: 500;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .tiptap p {
@@ -49,6 +51,8 @@ body {
 .fiche-content {
   line-height: 1.65;
   font-weight: 500;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .fiche-content p {
