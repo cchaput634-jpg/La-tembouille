@@ -5,9 +5,17 @@ interface Body {
   heure?: '21:00' | '21:45'
   cours?: string
   professeur?: string
+  gerant_figuration?: string
+  nombre_figurants?: number | null
   figuration_id?: string | null
   type?: 'mapping_only' | 'figuration_only' | 'tp_figuration'
 }
+
+const SELECT_WITH_JOIN = `
+  SELECT e.*, f.titre AS figuration_titre
+  FROM events e
+  LEFT JOIN figurations f ON f.id = e.figuration_id
+`
 
 export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   const url = new URL(request.url)
@@ -16,10 +24,10 @@ export const onRequestGet: PagesFunction<Env> = async ({ env, request }) => {
   let query
   if (from && to) {
     query = env.DB.prepare(
-      'SELECT * FROM events WHERE date >= ? AND date <= ? ORDER BY date, heure'
+      `${SELECT_WITH_JOIN} WHERE e.date >= ? AND e.date <= ? ORDER BY e.date, e.heure`
     ).bind(from, to)
   } else {
-    query = env.DB.prepare('SELECT * FROM events ORDER BY date DESC, heure')
+    query = env.DB.prepare(`${SELECT_WITH_JOIN} ORDER BY e.date DESC, e.heure`)
   }
   const { results } = await query.all()
   return Response.json(results)
@@ -32,8 +40,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
   }
   const id = crypto.randomUUID()
   await env.DB.prepare(
-    `INSERT INTO events (id, date, heure, cours, professeur, figuration_id, type)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO events (id, date, heure, cours, professeur, gerant_figuration, nombre_figurants, figuration_id, type)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       id,
@@ -41,10 +49,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
       body.heure,
       body.cours,
       body.professeur ?? '',
+      body.gerant_figuration ?? '',
+      body.nombre_figurants ?? null,
       body.figuration_id ?? null,
       body.type
     )
     .run()
-  const row = await env.DB.prepare('SELECT * FROM events WHERE id = ?').bind(id).first()
+  const row = await env.DB
+    .prepare(`${SELECT_WITH_JOIN} WHERE e.id = ?`)
+    .bind(id)
+    .first()
   return Response.json(row)
 }

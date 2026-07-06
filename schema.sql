@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS events (
   heure TEXT NOT NULL CHECK (heure IN ('21:00', '21:45')),
   cours TEXT NOT NULL,
   professeur TEXT NOT NULL DEFAULT '',
+  gerant_figuration TEXT NOT NULL DEFAULT '',
+  nombre_figurants INTEGER,
   figuration_id TEXT,
   type TEXT NOT NULL CHECK (type IN ('mapping_only', 'figuration_only', 'tp_figuration')),
   created_at INTEGER NOT NULL DEFAULT (unixepoch())

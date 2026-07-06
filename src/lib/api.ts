@@ -55,6 +55,12 @@ export const api = {
         body: JSON.stringify(input),
       }),
 
+    update: (id: string, input: Partial<EventInput>) =>
+      jsonFetch<CalendarEvent>(`${BASE}/events/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(input),
+      }),
+
     remove: (id: string) =>
       fetch(`${BASE}/events/${id}`, { method: 'DELETE' }).then(r => {
         if (!r.ok) throw new Error('Suppression échouée')

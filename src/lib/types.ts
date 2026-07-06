@@ -34,7 +34,10 @@ export interface CalendarEvent {
   heure: EventHeure
   cours: string
   professeur: string
+  gerant_figuration: string
+  nombre_figurants: number | null
   figuration_id: string | null
+  figuration_titre: string | null
   type: EventType
   created_at: number
 }
@@ -44,6 +47,8 @@ export interface EventInput {
   heure: EventHeure
   cours: string
   professeur?: string
+  gerant_figuration?: string
+  nombre_figurants?: number | null
   figuration_id?: string | null
   type: EventType
 }

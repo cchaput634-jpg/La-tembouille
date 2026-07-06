@@ -165,21 +165,26 @@ export function CalendrierView({ onOpenFigu }: Props) {
                 )}
               </div>
               <div className="flex flex-col gap-0.5">
-                {dayEvents.map(e => (
-                  <button
-                    key={e.id}
-                    onClick={ev => {
-                      ev.stopPropagation()
-                      setSelectedEvent(e)
-                    }}
-                    className="text-left text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded text-white truncate hover:opacity-80"
-                    style={{ backgroundColor: typeColor(e.type) }}
-                    title={`${e.heure} · ${coursNom(e.cours)}`}
-                  >
-                    <span className="font-semibold">{e.heure}</span>{' '}
-                    <span className="hidden sm:inline">{coursNom(e.cours)}</span>
-                  </button>
-                ))}
+                {dayEvents.map(e => {
+                  const label = e.figuration_titre
+                    ? `${coursNom(e.cours)} — ${e.figuration_titre}`
+                    : coursNom(e.cours)
+                  return (
+                    <button
+                      key={e.id}
+                      onClick={ev => {
+                        ev.stopPropagation()
+                        setSelectedEvent(e)
+                      }}
+                      className="text-left text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded text-white truncate hover:opacity-80"
+                      style={{ backgroundColor: typeColor(e.type) }}
+                      title={`${e.heure} · ${label}`}
+                    >
+                      <span className="font-semibold">{e.heure}</span>{' '}
+                      <span className="hidden sm:inline">{label}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )
@@ -194,7 +199,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
         <EventForm
           date={formDate}
           onClose={() => setFormDate(null)}
-          onCreated={() => {
+          onSaved={() => {
             setFormDate(null)
             setRefreshKey(k => k + 1)
           }}
@@ -205,8 +210,8 @@ export function CalendrierView({ onOpenFigu }: Props) {
         <EventDetail
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
-          onDeleted={() => {
-            setSelectedEvent(null)
+          onChanged={updated => {
+            setSelectedEvent(updated)
             setRefreshKey(k => k + 1)
           }}
           onOpenFigu={id => {

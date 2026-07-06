@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
-import { X, Trash2, BookOpen } from 'lucide-react'
+import { useState } from 'react'
+import { X, Trash2, BookOpen, Pencil } from 'lucide-react'
 import { api } from '@/lib/api'
 import { coursNom } from '@/data/cours'
 import { typeColor, typeLabel } from '@/data/eventTypes'
-import type { CalendarEvent, Figuration } from '@/lib/types'
+import type { CalendarEvent } from '@/lib/types'
+import { EventForm } from './EventForm'
 
 interface Props {
   event: CalendarEvent
   onClose: () => void
-  onDeleted: () => void
+  onChanged: (updated: CalendarEvent | null) => void
   onOpenFigu: (id: string) => void
 }
 
@@ -23,28 +24,33 @@ function frenchDate(iso: string): string {
   })
 }
 
-export function EventDetail({ event, onClose, onDeleted, onOpenFigu }: Props) {
-  const [figu, setFigu] = useState<Figuration | null>(null)
+export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
+  const [editing, setEditing] = useState(false)
   const [deleting, setDeleting] = useState(false)
-
-  useEffect(() => {
-    if (!event.figuration_id) return
-    api
-      .get(event.figuration_id)
-      .then(setFigu)
-      .catch(() => setFigu(null))
-  }, [event.figuration_id])
 
   const remove = async () => {
     if (!confirm('Supprimer cet événement ?')) return
     setDeleting(true)
     try {
       await api.events.remove(event.id)
-      onDeleted()
+      onChanged(null)
     } catch (e) {
       alert(`Suppression échouée : ${(e as Error).message}`)
       setDeleting(false)
     }
+  }
+
+  if (editing) {
+    return (
+      <EventForm
+        event={event}
+        onClose={() => setEditing(false)}
+        onSaved={updated => {
+          setEditing(false)
+          onChanged(updated)
+        }}
+      />
+    )
   }
 
   return (
@@ -67,6 +73,9 @@ export function EventDetail({ event, onClose, onDeleted, onOpenFigu }: Props) {
               style={{ fontFamily: 'var(--font-display)' }}
             >
               {coursNom(event.cours)}
+              {event.figuration_titre && (
+                <span className="opacity-70"> — {event.figuration_titre}</span>
+              )}
             </h3>
           </div>
           <button
@@ -95,38 +104,58 @@ export function EventDetail({ event, onClose, onDeleted, onOpenFigu }: Props) {
             </div>
           )}
 
+          {event.gerant_figuration && (
+            <div>
+              <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
+                Gérant figuration
+              </div>
+              <div className="text-[15px]">{event.gerant_figuration}</div>
+            </div>
+          )}
+
+          {event.nombre_figurants != null && (
+            <div>
+              <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
+                Nombre de figurants
+              </div>
+              <div className="text-[15px]">{event.nombre_figurants}</div>
+            </div>
+          )}
+
           <div>
             <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
               Figuration associée
             </div>
-            {event.figuration_id ? (
-              figu ? (
-                <button
-                  onClick={() => onOpenFigu(event.figuration_id!)}
-                  className="w-full flex items-center justify-between gap-2 bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] hover:border-[var(--color-ink)] rounded px-3 py-2.5 text-left transition-colors"
+            {event.figuration_id && event.figuration_titre ? (
+              <button
+                onClick={() => onOpenFigu(event.figuration_id!)}
+                className="w-full flex items-center justify-between gap-2 bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] hover:border-[var(--color-ink)] rounded px-3 py-2.5 text-left transition-colors"
+              >
+                <span
+                  className="text-[15px] italic"
+                  style={{ fontFamily: 'var(--font-display)' }}
                 >
-                  <span
-                    className="text-[15px] italic"
-                    style={{ fontFamily: 'var(--font-display)' }}
-                  >
-                    {figu.titre}
-                  </span>
-                  <BookOpen size={16} className="opacity-60 flex-shrink-0" />
-                </button>
-              ) : (
-                <div className="text-[13px] opacity-60 italic">Chargement...</div>
-              )
+                  {event.figuration_titre}
+                </span>
+                <BookOpen size={16} className="opacity-60 flex-shrink-0" />
+              </button>
             ) : (
               <div className="text-[13px] opacity-60 italic">Aucune</div>
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-[var(--color-ink)]/30 mt-2">
+          <div className="flex flex-wrap justify-end gap-2 pt-4 border-t border-[var(--color-ink)]/30 mt-2">
             <button
               onClick={onClose}
               className="flex items-center gap-1.5 border border-[var(--color-ink)] px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
             >
               <X size={14} /> Fermer
+            </button>
+            <button
+              onClick={() => setEditing(true)}
+              className="flex items-center gap-1.5 border border-[var(--color-ink)] px-3.5 py-2 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
+            >
+              <Pencil size={14} /> Modifier
             </button>
             <button
               onClick={remove}

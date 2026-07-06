@@ -3,21 +3,34 @@ import { X, Check } from 'lucide-react'
 import { api } from '@/lib/api'
 import { COURS } from '@/data/cours'
 import { EVENT_TYPES } from '@/data/eventTypes'
-import type { EventHeure, EventType, FigurationSummary } from '@/lib/types'
+import type {
+  EventHeure,
+  EventType,
+  FigurationSummary,
+  CalendarEvent,
+} from '@/lib/types'
 
 interface Props {
-  date: string
+  date?: string
+  event?: CalendarEvent
   onClose: () => void
-  onCreated: () => void
+  onSaved: (event: CalendarEvent) => void
 }
 
-export function EventForm({ date, onClose, onCreated }: Props) {
-  const [dateVal, setDateVal] = useState(date)
-  const [heure, setHeure] = useState<EventHeure>('21:00')
-  const [cours, setCours] = useState<string>(COURS[0].slug)
-  const [professeur, setProfesseur] = useState<string>('')
-  const [figurationId, setFigurationId] = useState<string>('')
-  const [type, setType] = useState<EventType>('mapping_only')
+const NEEDS_FIGURANTS = (t: EventType) => t === 'figuration_only' || t === 'tp_figuration'
+
+export function EventForm({ date, event, onClose, onSaved }: Props) {
+  const isEdit = !!event
+  const [dateVal, setDateVal] = useState(event?.date ?? date ?? '')
+  const [heure, setHeure] = useState<EventHeure>(event?.heure ?? '21:00')
+  const [cours, setCours] = useState<string>(event?.cours ?? COURS[0].slug)
+  const [professeur, setProfesseur] = useState<string>(event?.professeur ?? '')
+  const [gerantFigu, setGerantFigu] = useState<string>(event?.gerant_figuration ?? '')
+  const [nbFigurants, setNbFigurants] = useState<string>(
+    event?.nombre_figurants != null ? String(event.nombre_figurants) : ''
+  )
+  const [figurationId, setFigurationId] = useState<string>(event?.figuration_id ?? '')
+  const [type, setType] = useState<EventType>(event?.type ?? 'mapping_only')
   const [figurations, setFigurations] = useState<FigurationSummary[]>([])
   const [saving, setSaving] = useState(false)
 
@@ -26,23 +39,29 @@ export function EventForm({ date, onClose, onCreated }: Props) {
       .listByCours(cours)
       .then(setFigurations)
       .catch(() => setFigurations([]))
+    if (event && cours === event.cours) return
     setFigurationId('')
-  }, [cours])
+  }, [cours, event])
 
   const save = async () => {
     setSaving(true)
+    const payload = {
+      date: dateVal,
+      heure,
+      cours,
+      professeur: professeur.trim(),
+      gerant_figuration: gerantFigu.trim(),
+      nombre_figurants: NEEDS_FIGURANTS(type) && nbFigurants ? Number(nbFigurants) : null,
+      figuration_id: figurationId || null,
+      type,
+    }
     try {
-      await api.events.create({
-        date: dateVal,
-        heure,
-        cours,
-        professeur: professeur.trim(),
-        figuration_id: figurationId || null,
-        type,
-      })
-      onCreated()
+      const saved = isEdit
+        ? await api.events.update(event!.id, payload)
+        : await api.events.create(payload)
+      onSaved(saved)
     } catch (e) {
-      alert(`Création échouée : ${(e as Error).message}`)
+      alert(`Sauvegarde échouée : ${(e as Error).message}`)
     } finally {
       setSaving(false)
     }
@@ -60,7 +79,7 @@ export function EventForm({ date, onClose, onCreated }: Props) {
       >
         <div className="flex justify-between items-center mb-5 pb-3 border-b border-[var(--color-ink)]/30">
           <h3 className="text-[22px] italic m-0" style={{ fontFamily: 'var(--font-display)' }}>
-            Nouvel événement
+            {isEdit ? 'Modifier l\'événement' : 'Nouvel événement'}
           </h3>
           <button onClick={onClose} className="opacity-60 hover:opacity-100">
             <X size={18} />
@@ -134,6 +153,20 @@ export function EventForm({ date, onClose, onCreated }: Props) {
 
           <div>
             <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+              Gérant figuration
+            </label>
+            <input
+              type="text"
+              value={gerantFigu}
+              onChange={e => setGerantFigu(e.target.value)}
+              placeholder="Nom du gérant"
+              className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
               Figuration associée <span className="opacity-50 normal-case tracking-normal">— optionnel</span>
             </label>
             <select
@@ -174,6 +207,23 @@ export function EventForm({ date, onClose, onCreated }: Props) {
             </div>
           </div>
 
+          {NEEDS_FIGURANTS(type) && (
+            <div>
+              <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+                Nombre de figurants
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={nbFigurants}
+                onChange={e => setNbFigurants(e.target.value)}
+                placeholder="0"
+                className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
+                style={{ fontFamily: 'var(--font-serif)' }}
+              />
+            </div>
+          )}
+
           <div className="flex justify-end gap-2 pt-3 border-t border-[var(--color-ink)]/30 mt-2">
             <button
               onClick={onClose}
@@ -186,7 +236,7 @@ export function EventForm({ date, onClose, onCreated }: Props) {
               disabled={saving}
               className="flex items-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-3.5 py-2 rounded text-[13px] hover:opacity-90 disabled:opacity-50"
             >
-              <Check size={14} /> {saving ? 'Sauvegarde...' : 'Créer'}
+              <Check size={14} /> {saving ? 'Sauvegarde...' : isEdit ? 'Modifier' : 'Créer'}
             </button>
           </div>
         </div>
