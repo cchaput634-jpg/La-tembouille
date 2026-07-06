@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { X, Trash2, BookOpen, Pencil } from 'lucide-react'
 import { api } from '@/lib/api'
-import { coursNom } from '@/data/cours'
-import { typeColor, typeLabel } from '@/data/eventTypes'
+import { typeColor, typeLabel, eventTitle } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 
@@ -72,10 +71,7 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
               className="text-[24px] italic m-0 leading-tight break-words"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              {coursNom(event.cours)}
-              {event.figuration_titre && (
-                <span className="opacity-70"> — {event.figuration_titre}</span>
-              )}
+              {eventTitle(event)}
             </h3>
           </div>
           <button

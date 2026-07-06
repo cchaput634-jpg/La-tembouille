@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { api } from '@/lib/api'
-import { coursNom } from '@/data/cours'
-import { typeColor } from '@/data/eventTypes'
+import { typeColor, eventTitle } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 import { EventDetail } from './EventDetail'
@@ -166,9 +165,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
               </div>
               <div className="flex flex-col gap-0.5">
                 {dayEvents.map(e => {
-                  const label = e.figuration_titre
-                    ? `${coursNom(e.cours)} — ${e.figuration_titre}`
-                    : coursNom(e.cours)
+                  const label = eventTitle(e)
                   return (
                     <button
                       key={e.id}

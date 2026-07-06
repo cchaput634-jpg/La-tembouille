@@ -13,3 +13,16 @@ export function typeLabel(t: EventType): string {
 export function typeColor(t: EventType): string {
   return EVENT_TYPES.find(e => e.value === t)?.color ?? '#666'
 }
+
+import { coursNom } from './cours'
+
+export function eventTitle(e: {
+  cours: string
+  professeur: string
+  figuration_titre: string | null
+}): string {
+  const parts: string[] = [coursNom(e.cours)]
+  if (e.professeur) parts.push(e.professeur)
+  const head = parts.join(' · ')
+  return e.figuration_titre ? `${head} — ${e.figuration_titre}` : head
+}
