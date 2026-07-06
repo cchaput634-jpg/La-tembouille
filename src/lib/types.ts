@@ -24,3 +24,24 @@ export interface FigurationInput {
   lieu?: string
   autre?: string
 }
+
+export type EventHeure = '21:00' | '21:45'
+export type EventType = 'mapping_only' | 'figuration_only' | 'tp_figuration'
+
+export interface CalendarEvent {
+  id: string
+  date: string
+  heure: EventHeure
+  cours: string
+  figuration_id: string | null
+  type: EventType
+  created_at: number
+}
+
+export interface EventInput {
+  date: string
+  heure: EventHeure
+  cours: string
+  figuration_id?: string | null
+  type: EventType
+}

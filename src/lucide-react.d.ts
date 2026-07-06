@@ -9,6 +9,7 @@ declare module 'lucide-react' {
   export const Plus: LucideIcon
   export const Trash2: LucideIcon
   export const ChevronRight: LucideIcon
+  export const ChevronLeft: LucideIcon
   export const ArrowLeft: LucideIcon
   export const Pencil: LucideIcon
   export const X: LucideIcon

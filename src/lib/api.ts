@@ -1,4 +1,10 @@
-import type { Figuration, FigurationInput, FigurationSummary } from './types'
+import type {
+  Figuration,
+  FigurationInput,
+  FigurationSummary,
+  CalendarEvent,
+  EventInput,
+} from './types'
 
 const BASE = '/api'
 
@@ -36,4 +42,22 @@ export const api = {
     fetch(`${BASE}/figurations/${id}`, { method: 'DELETE' }).then(r => {
       if (!r.ok) throw new Error('Suppression échouée')
     }),
+
+  events: {
+    listRange: (from: string, to: string) =>
+      jsonFetch<CalendarEvent[]>(
+        `${BASE}/events?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+      ),
+
+    create: (input: EventInput) =>
+      jsonFetch<CalendarEvent>(`${BASE}/events`, {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }),
+
+    remove: (id: string) =>
+      fetch(`${BASE}/events/${id}`, { method: 'DELETE' }).then(r => {
+        if (!r.ok) throw new Error('Suppression échouée')
+      }),
+  },
 }

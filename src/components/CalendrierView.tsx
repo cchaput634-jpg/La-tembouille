@@ -1,0 +1,209 @@
+import { useEffect, useMemo, useState } from 'react'
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { api } from '@/lib/api'
+import { coursNom } from '@/data/cours'
+import { typeColor } from '@/data/eventTypes'
+import type { CalendarEvent } from '@/lib/types'
+import { EventForm } from './EventForm'
+
+const DAY_LABELS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+const MONTH_NAMES = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
+]
+
+function toISODate(y: number, m: number, d: number): string {
+  const mm = String(m + 1).padStart(2, '0')
+  const dd = String(d).padStart(2, '0')
+  return `${y}-${mm}-${dd}`
+}
+
+function firstDayOffset(year: number, month: number): number {
+  const jsDay = new Date(year, month, 1).getDay()
+  return jsDay === 0 ? 6 : jsDay - 1
+}
+
+function daysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate()
+}
+
+export function CalendrierView() {
+  const now = new Date()
+  const [year, setYear] = useState(now.getFullYear())
+  const [month, setMonth] = useState(now.getMonth())
+  const [events, setEvents] = useState<CalendarEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [formDate, setFormDate] = useState<string | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const monthStart = toISODate(year, month, 1)
+  const monthEnd = toISODate(year, month, daysInMonth(year, month))
+
+  useEffect(() => {
+    setLoading(true)
+    api.events
+      .listRange(monthStart, monthEnd)
+      .then(setEvents)
+      .catch(e => alert(`Erreur : ${e.message}`))
+      .finally(() => setLoading(false))
+  }, [monthStart, monthEnd, refreshKey])
+
+  const eventsByDate = useMemo(() => {
+    const map: Record<string, CalendarEvent[]> = {}
+    for (const e of events) {
+      if (!map[e.date]) map[e.date] = []
+      map[e.date].push(e)
+    }
+    for (const k of Object.keys(map)) {
+      map[k].sort((a, b) => a.heure.localeCompare(b.heure))
+    }
+    return map
+  }, [events])
+
+  const prevMonth = () => {
+    if (month === 0) {
+      setYear(y => y - 1)
+      setMonth(11)
+    } else {
+      setMonth(m => m - 1)
+    }
+  }
+
+  const nextMonth = () => {
+    if (month === 11) {
+      setYear(y => y + 1)
+      setMonth(0)
+    } else {
+      setMonth(m => m + 1)
+    }
+  }
+
+  const goToday = () => {
+    const t = new Date()
+    setYear(t.getFullYear())
+    setMonth(t.getMonth())
+  }
+
+  const removeEvent = async (id: string) => {
+    if (!confirm('Supprimer cet événement ?')) return
+    try {
+      await api.events.remove(id)
+      setEvents(prev => prev.filter(e => e.id !== id))
+    } catch (e) {
+      alert(`Suppression échouée : ${(e as Error).message}`)
+    }
+  }
+
+  const offset = firstDayOffset(year, month)
+  const nbDays = daysInMonth(year, month)
+  const todayISO = toISODate(now.getFullYear(), now.getMonth(), now.getDate())
+
+  const cells: Array<{ iso: string; day: number } | null> = []
+  for (let i = 0; i < offset; i++) cells.push(null)
+  for (let d = 1; d <= nbDays; d++) cells.push({ iso: toISODate(year, month, d), day: d })
+  while (cells.length % 7 !== 0) cells.push(null)
+
+  return (
+    <div>
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={prevMonth}
+            className="border border-[var(--color-ink)] rounded p-2 hover:bg-[var(--color-parchment-soft)]"
+            title="Mois précédent"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <h2
+            className="text-[28px] sm:text-[34px] italic m-0 leading-tight"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            {MONTH_NAMES[month]} {year}
+          </h2>
+          <button
+            onClick={nextMonth}
+            className="border border-[var(--color-ink)] rounded p-2 hover:bg-[var(--color-parchment-soft)]"
+            title="Mois suivant"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+        <button
+          onClick={goToday}
+          className="border border-[var(--color-ink)] rounded px-3 py-2 text-[13px] hover:bg-[var(--color-parchment-soft)]"
+        >
+          Aujourd'hui
+        </button>
+      </div>
+
+      <div className="grid grid-cols-7 gap-1 mb-2 text-[11px] uppercase tracking-[1.5px] opacity-60">
+        {DAY_LABELS.map(l => (
+          <div key={l} className="text-center py-1">{l}</div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map((cell, i) => {
+          if (!cell) return <div key={i} className="min-h-[80px] sm:min-h-[110px]" />
+          const dayEvents = eventsByDate[cell.iso] ?? []
+          const isToday = cell.iso === todayISO
+          return (
+            <div
+              key={i}
+              className={`min-h-[80px] sm:min-h-[110px] bg-[var(--color-parchment-soft)] border rounded-md p-1.5 sm:p-2 flex flex-col gap-1 cursor-pointer hover:border-[var(--color-ink)] transition-colors ${
+                isToday
+                  ? 'border-[var(--color-ink)] border-2'
+                  : 'border-[var(--color-parchment-line)]'
+              }`}
+              onClick={() => setFormDate(cell.iso)}
+            >
+              <div className="flex justify-between items-start">
+                <span
+                  className={`text-[13px] sm:text-[15px] ${isToday ? 'font-semibold' : ''}`}
+                  style={{ fontFamily: 'var(--font-serif)' }}
+                >
+                  {cell.day}
+                </span>
+                {dayEvents.length === 0 && (
+                  <Plus size={12} className="opacity-0 group-hover:opacity-40" />
+                )}
+              </div>
+              <div className="flex flex-col gap-0.5">
+                {dayEvents.map(e => (
+                  <button
+                    key={e.id}
+                    onClick={ev => {
+                      ev.stopPropagation()
+                      removeEvent(e.id)
+                    }}
+                    className="text-left text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded text-white truncate hover:opacity-80"
+                    style={{ backgroundColor: typeColor(e.type) }}
+                    title={`${e.heure} · ${coursNom(e.cours)} — clic pour supprimer`}
+                  >
+                    <span className="font-semibold">{e.heure}</span>{' '}
+                    <span className="hidden sm:inline">{coursNom(e.cours)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {loading && (
+        <div className="mt-3 text-[12px] opacity-60 italic">Chargement du mois...</div>
+      )}
+
+      {formDate && (
+        <EventForm
+          date={formDate}
+          onClose={() => setFormDate(null)}
+          onCreated={() => {
+            setFormDate(null)
+            setRefreshKey(k => k + 1)
+          }}
+        />
+      )}
+    </div>
+  )
+}
