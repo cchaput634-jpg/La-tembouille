@@ -5,6 +5,7 @@ import { typeColor, eventTitle } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 import { EventDetail } from './EventDetail'
+import { DayView } from './DayView'
 
 interface Props {
   onOpenFigu: (id: string) => void
@@ -39,6 +40,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
   const [loading, setLoading] = useState(true)
   const [formDate, setFormDate] = useState<string | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const [dayViewDate, setDayViewDate] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const monthStart = toISODate(year, month, 1)
@@ -150,7 +152,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
                   ? 'border-[var(--color-ink)] border-2'
                   : 'border-[var(--color-parchment-line)]'
               }`}
-              onClick={() => setFormDate(cell.iso)}
+              onClick={() => setDayViewDate(cell.iso)}
             >
               <div className="flex justify-between items-start">
                 <span
@@ -190,6 +192,23 @@ export function CalendrierView({ onOpenFigu }: Props) {
 
       {loading && (
         <div className="mt-3 text-[12px] opacity-60 italic">Chargement du mois...</div>
+      )}
+
+      {dayViewDate && (
+        <DayView
+          date={dayViewDate}
+          events={eventsByDate[dayViewDate] ?? []}
+          onClose={() => setDayViewDate(null)}
+          onOpenEvent={e => {
+            setDayViewDate(null)
+            setSelectedEvent(e)
+          }}
+          onCreateEvent={() => {
+            const d = dayViewDate
+            setDayViewDate(null)
+            setFormDate(d)
+          }}
+        />
       )}
 
       {formDate && (

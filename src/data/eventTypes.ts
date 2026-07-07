@@ -19,10 +19,12 @@ import { coursNom } from './cours'
 export function eventTitle(e: {
   cours: string
   professeur: string
+  gerant_figuration: string
   figuration_titre: string | null
 }): string {
   const parts: string[] = [coursNom(e.cours)]
   if (e.professeur) parts.push(e.professeur)
+  if (e.gerant_figuration) parts.push(e.gerant_figuration)
   const head = parts.join(' · ')
   return e.figuration_titre ? `${head} — ${e.figuration_titre}` : head
 }
