@@ -71,18 +71,18 @@ export function DayView({ date, events, onClose, onOpenEvent, onCreateEvent }: P
                       style={{ backgroundColor: late ? LATE_COLOR : typeColor(e.type) }}
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12px] font-semibold tracking-[1px] opacity-70">
+                      <div className="text-[13px] font-semibold tracking-[1px] opacity-70">
                         {e.heure.replace(':', 'h')}
                         {late && <span className="ml-2 uppercase">· Tardif</span>}
                       </div>
                       <div
-                        className="text-[16px] italic break-words leading-tight mt-0.5"
-                        style={{ fontFamily: 'var(--font-display)' }}
+                        className="text-[16px] break-words leading-snug mt-1"
+                        style={{ fontFamily: 'var(--font-serif)', fontWeight: 600 }}
                       >
                         {eventTitle(e)}
                       </div>
                       {e.nombre_figurants != null && (
-                        <div className="text-[12px] opacity-70 mt-1">
+                        <div className="text-[13px] opacity-80 mt-1" style={{ fontWeight: 500 }}>
                           {e.nombre_figurants} figurant{e.nombre_figurants > 1 ? 's' : ''}
                         </div>
                       )}

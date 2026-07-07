@@ -156,8 +156,11 @@ export function CalendrierView({ onOpenFigu }: Props) {
             >
               <div className="flex justify-between items-start">
                 <span
-                  className={`text-[13px] sm:text-[15px] ${isToday ? 'font-semibold' : ''}`}
-                  style={{ fontFamily: 'var(--font-serif)' }}
+                  className="text-[14px] sm:text-[16px]"
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: isToday ? 700 : 600,
+                  }}
                 >
                   {cell.day}
                 </span>
@@ -176,11 +179,14 @@ export function CalendrierView({ onOpenFigu }: Props) {
                         ev.stopPropagation()
                         setSelectedEvent(e)
                       }}
-                      className="relative text-left text-[10px] sm:text-[11px] pl-1.5 pr-2 py-0.5 rounded text-white truncate hover:opacity-80 overflow-hidden"
-                      style={{ backgroundColor: late ? LATE_COLOR : typeColor(e.type) }}
+                      className="relative text-left text-[11px] sm:text-[12px] pl-1.5 pr-2 py-[3px] rounded text-white truncate hover:opacity-80 overflow-hidden"
+                      style={{
+                        backgroundColor: late ? LATE_COLOR : typeColor(e.type),
+                        fontWeight: 600,
+                      }}
                       title={`${e.heure} · ${label}${late ? ' · TARDIF' : ''}`}
                     >
-                      <span className="font-semibold">{e.heure}</span>{' '}
+                      <span>{e.heure}</span>{' '}
                       <span className="hidden sm:inline">{label}</span>
                       {late && (
                         <span
