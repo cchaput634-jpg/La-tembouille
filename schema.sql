@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS events (
   type TEXT NOT NULL CHECK (type IN ('mapping_only', 'figuration_only', 'tp_figuration')),
   motif_retard TEXT,
   statut_tp TEXT,
+  statut_figu TEXT,
   created_at INTEGER NOT NULL DEFAULT (unixepoch())
 );
 

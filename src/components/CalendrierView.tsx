@@ -7,6 +7,7 @@ import { EventForm } from './EventForm'
 import { EventDetail } from './EventDetail'
 import { DayView } from './DayView'
 import { ExportView } from './ExportView'
+import { ExportFiguView } from './ExportFiguView'
 
 interface Props {
   onOpenFigu: (id: string) => void
@@ -53,6 +54,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [dayViewDate, setDayViewDate] = useState<string | null>(null)
   const [exportDate, setExportDate] = useState<string | null>(null)
+  const [exportFiguDate, setExportFiguDate] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const monthStart = toISODate(year, month, 1)
@@ -233,10 +235,15 @@ export function CalendrierView({ onOpenFigu }: Props) {
             setDayViewDate(null)
             setFormDate(d)
           }}
-          onExport={() => {
+          onExportTP={() => {
             const d = dayViewDate
             setDayViewDate(null)
             setExportDate(d)
+          }}
+          onExportFigu={() => {
+            const d = dayViewDate
+            setDayViewDate(null)
+            setExportFiguDate(d)
           }}
         />
       )}
@@ -274,6 +281,18 @@ export function CalendrierView({ onOpenFigu }: Props) {
           onClose={() => setExportDate(null)}
           onOpenFigu={id => {
             setExportDate(null)
+            onOpenFigu(id)
+          }}
+        />
+      )}
+
+      {exportFiguDate && (
+        <ExportFiguView
+          events={eventsByDate[exportFiguDate] ?? []}
+          label={exportDayLabel(exportFiguDate)}
+          onClose={() => setExportFiguDate(null)}
+          onOpenFigu={id => {
+            setExportFiguDate(null)
             onOpenFigu(id)
           }}
         />

@@ -45,7 +45,7 @@ export function isEventLate(e: { motif_retard: string | null }): boolean {
   return e.motif_retard != null && e.motif_retard.trim() !== ''
 }
 
-import type { StatutTP } from '@/lib/types'
+import type { StatutTP, StatutFigu } from '@/lib/types'
 
 export const STATUT_TP_OPTIONS: Array<{
   value: StatutTP
@@ -56,6 +56,16 @@ export const STATUT_TP_OPTIONS: Array<{
   { value: 'en_cours', label: 'En cours', color: '#C87B2A' },
   { value: 'info_demandee', label: 'Info demandée', color: '#5C7C99' },
   { value: 'refuse', label: 'Refusé', color: '#B33A3A' },
+]
+
+export const STATUT_FIGU_OPTIONS: Array<{
+  value: StatutFigu
+  label: string
+  color: string
+}> = [
+  { value: 'demande_en_cours', label: 'Demande en cours', color: '#C87B2A' },
+  { value: 'full', label: 'Full', color: '#4A7C43' },
+  { value: 'refusee', label: 'Refusée', color: '#B33A3A' },
 ]
 
 export function statutColor(s: StatutTP): string {
