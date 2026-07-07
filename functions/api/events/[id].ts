@@ -9,6 +9,7 @@ const FIELDS = [
   'nombre_figurants',
   'figuration_id',
   'type',
+  'motif_retard',
 ] as const
 type Field = typeof FIELDS[number]
 

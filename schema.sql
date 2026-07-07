@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS events (
   nombre_figurants INTEGER,
   figuration_id TEXT,
   type TEXT NOT NULL CHECK (type IN ('mapping_only', 'figuration_only', 'tp_figuration')),
+  motif_retard TEXT,
   created_at INTEGER NOT NULL DEFAULT (unixepoch())
 );
 

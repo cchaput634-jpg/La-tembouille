@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { api } from '@/lib/api'
-import { typeColor, eventTitle } from '@/data/eventTypes'
+import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 import { EventDetail } from './EventDetail'
@@ -168,6 +168,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
               <div className="flex flex-col gap-0.5">
                 {dayEvents.map(e => {
                   const label = eventTitle(e)
+                  const late = isEventLate(e)
                   return (
                     <button
                       key={e.id}
@@ -175,12 +176,18 @@ export function CalendrierView({ onOpenFigu }: Props) {
                         ev.stopPropagation()
                         setSelectedEvent(e)
                       }}
-                      className="text-left text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded text-white truncate hover:opacity-80"
-                      style={{ backgroundColor: typeColor(e.type) }}
-                      title={`${e.heure} · ${label}`}
+                      className="relative text-left text-[10px] sm:text-[11px] pl-1.5 pr-2 py-0.5 rounded text-white truncate hover:opacity-80 overflow-hidden"
+                      style={{ backgroundColor: late ? LATE_COLOR : typeColor(e.type) }}
+                      title={`${e.heure} · ${label}${late ? ' · TARDIF' : ''}`}
                     >
                       <span className="font-semibold">{e.heure}</span>{' '}
                       <span className="hidden sm:inline">{label}</span>
+                      {late && (
+                        <span
+                          className="absolute right-0 top-0 bottom-0 w-[6px]"
+                          style={{ backgroundColor: typeColor(e.type) }}
+                        />
+                      )}
                     </button>
                   )
                 })}

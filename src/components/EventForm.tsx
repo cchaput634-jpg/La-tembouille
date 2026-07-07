@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { X, Check } from 'lucide-react'
 import { api } from '@/lib/api'
 import { COURS } from '@/data/cours'
-import { EVENT_TYPES } from '@/data/eventTypes'
+import { EVENT_TYPES, willBeLate } from '@/data/eventTypes'
 import type {
   EventHeure,
   EventType,
@@ -31,8 +31,11 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
   )
   const [figurationId, setFigurationId] = useState<string>(event?.figuration_id ?? '')
   const [type, setType] = useState<EventType>(event?.type ?? 'mapping_only')
+  const [motifRetard, setMotifRetard] = useState<string>(event?.motif_retard ?? '')
   const [figurations, setFigurations] = useState<FigurationSummary[]>([])
   const [saving, setSaving] = useState(false)
+
+  const isLate = useMemo(() => willBeLate(dateVal, heure), [dateVal, heure])
 
   useEffect(() => {
     api
@@ -44,6 +47,10 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
   }, [cours, event])
 
   const save = async () => {
+    if (isLate && !motifRetard.trim()) {
+      alert('Motif du retard requis pour un événement à moins de 48h.')
+      return
+    }
     setSaving(true)
     const payload = {
       date: dateVal,
@@ -54,6 +61,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
       nombre_figurants: NEEDS_FIGURANTS(type) && nbFigurants ? Number(nbFigurants) : null,
       figuration_id: figurationId || null,
       type,
+      motif_retard: isLate ? motifRetard.trim() : event?.motif_retard ?? null,
     }
     try {
       const saved = isEdit
@@ -219,6 +227,25 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
                 onChange={e => setNbFigurants(e.target.value)}
                 placeholder="0"
                 className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
+                style={{ fontFamily: 'var(--font-serif)' }}
+              />
+            </div>
+          )}
+
+          {isLate && (
+            <div className="border border-[var(--color-alert)] rounded-md p-3.5 bg-[var(--color-alert)]/5">
+              <label
+                className="block text-[11px] tracking-[2px] uppercase mb-1.5 font-semibold"
+                style={{ color: 'var(--color-alert)' }}
+              >
+                Motif du retard <span className="opacity-70">— requis (&lt; 48 h)</span>
+              </label>
+              <textarea
+                value={motifRetard}
+                onChange={e => setMotifRetard(e.target.value)}
+                placeholder="Pourquoi cette demande arrive-t-elle à moins de 48 h ?"
+                rows={2}
+                className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-alert)] rounded px-3 py-2 text-[14px] focus:outline-none resize-y"
                 style={{ fontFamily: 'var(--font-serif)' }}
               />
             </div>

@@ -28,3 +28,19 @@ export function eventTitle(e: {
   if (e.gerant_figuration) parts.push(e.gerant_figuration)
   return parts.join(' · ')
 }
+
+export const LATE_THRESHOLD_MS = 48 * 3600 * 1000
+export const LATE_COLOR = '#B33A3A'
+
+export function eventDatetimeMs(dateStr: string, heure: string): number {
+  return new Date(`${dateStr}T${heure}:00`).getTime()
+}
+
+export function willBeLate(dateStr: string, heure: string, nowMs = Date.now()): boolean {
+  if (!dateStr) return false
+  return eventDatetimeMs(dateStr, heure) - nowMs < LATE_THRESHOLD_MS
+}
+
+export function isEventLate(e: { motif_retard: string | null }): boolean {
+  return e.motif_retard != null && e.motif_retard.trim() !== ''
+}

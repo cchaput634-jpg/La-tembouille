@@ -1,5 +1,5 @@
 import { X, Plus } from 'lucide-react'
-import { typeColor, eventTitle } from '@/data/eventTypes'
+import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 
 interface Props {
@@ -53,36 +53,50 @@ export function DayView({ date, events, onClose, onOpenEvent, onCreateEvent }: P
           </div>
         ) : (
           <ul className="flex flex-col gap-2 list-none p-0 m-0 mb-4">
-            {events.map(e => (
-              <li
-                key={e.id}
-                onClick={() => onOpenEvent(e)}
-                className="bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] hover:border-[var(--color-ink)] rounded-md px-3.5 py-3 cursor-pointer transition-colors"
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    className="inline-block w-3.5 h-3.5 rounded flex-shrink-0 mt-[6px]"
-                    style={{ backgroundColor: typeColor(e.type) }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[12px] font-semibold tracking-[1px] opacity-70">
-                      {e.heure.replace(':', 'h')}
-                    </div>
-                    <div
-                      className="text-[16px] italic break-words leading-tight mt-0.5"
-                      style={{ fontFamily: 'var(--font-display)' }}
-                    >
-                      {eventTitle(e)}
-                    </div>
-                    {e.nombre_figurants != null && (
-                      <div className="text-[12px] opacity-70 mt-1">
-                        {e.nombre_figurants} figurant{e.nombre_figurants > 1 ? 's' : ''}
+            {events.map(e => {
+              const late = isEventLate(e)
+              return (
+                <li
+                  key={e.id}
+                  onClick={() => onOpenEvent(e)}
+                  className="relative overflow-hidden bg-[var(--color-parchment-soft)] border rounded-md px-3.5 py-3 cursor-pointer transition-colors"
+                  style={{
+                    borderColor: late ? LATE_COLOR : 'var(--color-parchment-line)',
+                    color: late ? LATE_COLOR : undefined,
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="inline-block w-3.5 h-3.5 rounded flex-shrink-0 mt-[6px]"
+                      style={{ backgroundColor: late ? LATE_COLOR : typeColor(e.type) }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[12px] font-semibold tracking-[1px] opacity-70">
+                        {e.heure.replace(':', 'h')}
+                        {late && <span className="ml-2 uppercase">· Tardif</span>}
                       </div>
-                    )}
+                      <div
+                        className="text-[16px] italic break-words leading-tight mt-0.5"
+                        style={{ fontFamily: 'var(--font-display)' }}
+                      >
+                        {eventTitle(e)}
+                      </div>
+                      {e.nombre_figurants != null && (
+                        <div className="text-[12px] opacity-70 mt-1">
+                          {e.nombre_figurants} figurant{e.nombre_figurants > 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
+                  {late && (
+                    <span
+                      className="absolute right-0 top-0 bottom-0 w-[6px]"
+                      style={{ backgroundColor: typeColor(e.type) }}
+                    />
+                  )}
+                </li>
+              )
+            })}
           </ul>
         )}
 

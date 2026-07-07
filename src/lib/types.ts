@@ -39,6 +39,7 @@ export interface CalendarEvent {
   figuration_id: string | null
   figuration_titre: string | null
   type: EventType
+  motif_retard: string | null
   created_at: number
 }
 
@@ -51,4 +52,5 @@ export interface EventInput {
   nombre_figurants?: number | null
   figuration_id?: string | null
   type: EventType
+  motif_retard?: string | null
 }

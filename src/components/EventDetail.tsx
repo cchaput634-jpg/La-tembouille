@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, Trash2, BookOpen, Pencil } from 'lucide-react'
 import { api } from '@/lib/api'
-import { typeColor, typeLabel, eventTitle } from '@/data/eventTypes'
+import { typeColor, typeLabel, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 
@@ -115,6 +115,20 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
                 Nombre de figurants
               </div>
               <div className="text-[15px]">{event.nombre_figurants}</div>
+            </div>
+          )}
+
+          {isEventLate(event) && (
+            <div className="border rounded-md p-3.5" style={{ borderColor: LATE_COLOR }}>
+              <div
+                className="text-[11px] tracking-[2px] uppercase mb-1 font-semibold"
+                style={{ color: LATE_COLOR }}
+              >
+                Motif du retard <span className="opacity-70">— demande &lt; 48 h</span>
+              </div>
+              <div className="text-[15px]" style={{ color: LATE_COLOR }}>
+                {event.motif_retard}
+              </div>
             </div>
           )}
 
