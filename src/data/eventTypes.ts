@@ -23,8 +23,8 @@ export function eventTitle(e: {
   figuration_titre: string | null
 }): string {
   const parts: string[] = [coursNom(e.cours)]
+  if (e.figuration_titre) parts.push(e.figuration_titre)
   if (e.professeur) parts.push(e.professeur)
   if (e.gerant_figuration) parts.push(e.gerant_figuration)
-  const head = parts.join(' · ')
-  return e.figuration_titre ? `${head} — ${e.figuration_titre}` : head
+  return parts.join(' · ')
 }
