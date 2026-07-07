@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, FileDown } from 'lucide-react'
 import { api } from '@/lib/api'
 import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 import { EventDetail } from './EventDetail'
 import { DayView } from './DayView'
+import { ExportView } from './ExportView'
 
 interface Props {
   onOpenFigu: (id: string) => void
@@ -41,6 +42,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
   const [formDate, setFormDate] = useState<string | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [dayViewDate, setDayViewDate] = useState<string | null>(null)
+  const [exportOpen, setExportOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const monthStart = toISODate(year, month, 1)
@@ -125,12 +127,20 @@ export function CalendrierView({ onOpenFigu }: Props) {
             <ChevronRight size={18} />
           </button>
         </div>
-        <button
-          onClick={goToday}
-          className="border border-[var(--color-ink)] rounded px-3 py-2 text-[13px] hover:bg-[var(--color-parchment-soft)]"
-        >
-          Aujourd'hui
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={goToday}
+            className="border border-[var(--color-ink)] rounded px-3 py-2 text-[13px] hover:bg-[var(--color-parchment-soft)]"
+          >
+            Aujourd'hui
+          </button>
+          <button
+            onClick={() => setExportOpen(true)}
+            className="flex items-center gap-1.5 border border-[var(--color-ink)] bg-[var(--color-ink)] text-[var(--color-parchment)] rounded px-3 py-2 text-[13px] hover:opacity-90"
+          >
+            <FileDown size={14} /> Export demandes TP
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2 text-[11px] uppercase tracking-[1.5px] opacity-60">
@@ -245,6 +255,18 @@ export function CalendrierView({ onOpenFigu }: Props) {
           }}
           onOpenFigu={id => {
             setSelectedEvent(null)
+            onOpenFigu(id)
+          }}
+        />
+      )}
+
+      {exportOpen && (
+        <ExportView
+          events={events}
+          monthLabel={`${MONTH_NAMES[month]} ${year}`}
+          onClose={() => setExportOpen(false)}
+          onOpenFigu={id => {
+            setExportOpen(false)
             onOpenFigu(id)
           }}
         />

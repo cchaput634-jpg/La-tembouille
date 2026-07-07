@@ -18,4 +18,8 @@ declare module 'lucide-react' {
   export const Palette: LucideIcon
   export const Eraser: LucideIcon
   export const BookOpen: LucideIcon
+  export const ChevronDown: LucideIcon
+  export const ChevronUp: LucideIcon
+  export const MapPin: LucideIcon
+  export const FileDown: LucideIcon
 }

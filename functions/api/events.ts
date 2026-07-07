@@ -13,7 +13,7 @@ interface Body {
 }
 
 const SELECT_WITH_JOIN = `
-  SELECT e.*, f.titre AS figuration_titre
+  SELECT e.*, f.titre AS figuration_titre, f.lieu AS figuration_lieu
   FROM events e
   LEFT JOIN figurations f ON f.id = e.figuration_id
 `
