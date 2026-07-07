@@ -10,6 +10,7 @@ const FIELDS = [
   'figuration_id',
   'type',
   'motif_retard',
+  'statut_tp',
 ] as const
 type Field = typeof FIELDS[number]
 

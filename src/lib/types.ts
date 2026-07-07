@@ -27,6 +27,7 @@ export interface FigurationInput {
 
 export type EventHeure = '21:00' | '21:45'
 export type EventType = 'mapping_only' | 'figuration_only' | 'tp_figuration'
+export type StatutTP = 'fait' | 'en_cours' | 'info_demandee' | 'refuse'
 
 export interface CalendarEvent {
   id: string
@@ -41,6 +42,7 @@ export interface CalendarEvent {
   figuration_lieu: string | null
   type: EventType
   motif_retard: string | null
+  statut_tp: StatutTP | null
   created_at: number
 }
 
@@ -54,4 +56,5 @@ export interface EventInput {
   figuration_id?: string | null
   type: EventType
   motif_retard?: string | null
+  statut_tp?: StatutTP | null
 }

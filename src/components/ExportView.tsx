@@ -1,8 +1,14 @@
 import { useMemo, useState } from 'react'
 import { X, ChevronDown, ChevronUp, MapPin } from 'lucide-react'
+import { api } from '@/lib/api'
 import { coursNom } from '@/data/cours'
-import { typeColor, typeLabel, eventTitle } from '@/data/eventTypes'
-import type { CalendarEvent } from '@/lib/types'
+import {
+  typeColor,
+  typeLabel,
+  eventTitle,
+  STATUT_TP_OPTIONS,
+} from '@/data/eventTypes'
+import type { CalendarEvent, StatutTP } from '@/lib/types'
 
 interface Props {
   events: CalendarEvent[]
@@ -81,6 +87,11 @@ function LieuBlock({ html }: { html: string }) {
 }
 
 export function ExportView({ events, label, onClose, onOpenFigu }: Props) {
+  const [statuts, setStatuts] = useState<Record<string, StatutTP | null>>(() =>
+    Object.fromEntries(events.map(e => [e.id, e.statut_tp]))
+  )
+  const [pending, setPending] = useState<Record<string, boolean>>({})
+
   const filtered = useMemo(
     () =>
       events
@@ -91,6 +102,20 @@ export function ExportView({ events, label, onClose, onOpenFigu }: Props) {
         }),
     [events]
   )
+
+  const setStatut = async (eventId: string, next: StatutTP | null) => {
+    const previous = statuts[eventId] ?? null
+    setStatuts(prev => ({ ...prev, [eventId]: next }))
+    setPending(prev => ({ ...prev, [eventId]: true }))
+    try {
+      await api.events.update(eventId, { statut_tp: next })
+    } catch (e) {
+      setStatuts(prev => ({ ...prev, [eventId]: previous }))
+      alert(`Statut non enregistré : ${(e as Error).message}`)
+    } finally {
+      setPending(prev => ({ ...prev, [eventId]: false }))
+    }
+  }
 
   return (
     <div
@@ -155,11 +180,40 @@ export function ExportView({ events, label, onClose, onOpenFigu }: Props) {
                   {eventTitle(e)}
                 </button>
 
-                <div className="border-t border-[var(--color-parchment-line)] pt-2.5">
+                <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3">
                   <div className="flex items-center gap-1.5 text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
                     <MapPin size={12} /> Lieu — {coursNom(e.cours)}
                   </div>
                   <LieuBlock html={e.figuration_lieu ?? ''} />
+                </div>
+
+                <div className="border-t border-[var(--color-parchment-line)] pt-2.5">
+                  <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+                    Statut
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {STATUT_TP_OPTIONS.map(opt => {
+                      const active = statuts[e.id] === opt.value
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() =>
+                            setStatut(e.id, active ? null : opt.value)
+                          }
+                          disabled={pending[e.id]}
+                          className="px-2.5 py-1 rounded text-[12px] border transition-colors disabled:opacity-60"
+                          style={{
+                            borderColor: opt.color,
+                            backgroundColor: active ? opt.color : 'transparent',
+                            color: active ? '#fff' : opt.color,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               </li>
             ))}

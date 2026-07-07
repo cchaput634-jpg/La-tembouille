@@ -44,3 +44,20 @@ export function willBeLate(dateStr: string, heure: string, nowMs = Date.now()): 
 export function isEventLate(e: { motif_retard: string | null }): boolean {
   return e.motif_retard != null && e.motif_retard.trim() !== ''
 }
+
+import type { StatutTP } from '@/lib/types'
+
+export const STATUT_TP_OPTIONS: Array<{
+  value: StatutTP
+  label: string
+  color: string
+}> = [
+  { value: 'fait', label: 'Fait', color: '#4A7C43' },
+  { value: 'en_cours', label: 'En cours', color: '#C87B2A' },
+  { value: 'info_demandee', label: 'Info demandée', color: '#5C7C99' },
+  { value: 'refuse', label: 'Refusé', color: '#B33A3A' },
+]
+
+export function statutColor(s: StatutTP): string {
+  return STATUT_TP_OPTIONS.find(o => o.value === s)?.color ?? '#888'
+}
