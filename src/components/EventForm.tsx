@@ -175,7 +175,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
 
           <div>
             <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
-              Figuration associée <span className="opacity-50 normal-case tracking-normal">— optionnel</span>
+              Figuration associée
             </label>
             <select
               value={figurationId}
