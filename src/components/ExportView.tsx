@@ -6,7 +6,7 @@ import type { CalendarEvent } from '@/lib/types'
 
 interface Props {
   events: CalendarEvent[]
-  monthLabel: string
+  label: string
   onClose: () => void
   onOpenFigu: (id: string) => void
 }
@@ -80,7 +80,7 @@ function LieuBlock({ html }: { html: string }) {
   )
 }
 
-export function ExportView({ events, monthLabel, onClose, onOpenFigu }: Props) {
+export function ExportView({ events, label, onClose, onOpenFigu }: Props) {
   const filtered = useMemo(
     () =>
       events
@@ -111,7 +111,7 @@ export function ExportView({ events, monthLabel, onClose, onOpenFigu }: Props) {
               className="text-[24px] italic m-0 leading-tight capitalize"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              {monthLabel}
+              {label}
             </h3>
             <div className="text-[12px] opacity-70 mt-1.5">
               {filtered.length} demande{filtered.length > 1 ? 's' : ''}
@@ -124,7 +124,7 @@ export function ExportView({ events, monthLabel, onClose, onOpenFigu }: Props) {
 
         {filtered.length === 0 ? (
           <div className="text-[13px] opacity-60 italic py-8 text-center">
-            Aucune demande TP ou Mapping avec figuration associée ce mois-ci.
+            Aucune demande TP ou Mapping avec figuration associée.
           </div>
         ) : (
           <ul className="flex flex-col gap-3 list-none p-0 m-0">

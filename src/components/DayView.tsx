@@ -1,4 +1,4 @@
-import { X, Plus } from 'lucide-react'
+import { X, Plus, FileDown } from 'lucide-react'
 import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 
@@ -8,7 +8,10 @@ interface Props {
   onClose: () => void
   onOpenEvent: (event: CalendarEvent) => void
   onCreateEvent: () => void
+  onExport: () => void
 }
+
+const EXPORT_TYPES = new Set(['mapping_only', 'tp_figuration'])
 
 function frenchDate(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number)
@@ -21,7 +24,11 @@ function frenchDate(iso: string): string {
   })
 }
 
-export function DayView({ date, events, onClose, onOpenEvent, onCreateEvent }: Props) {
+export function DayView({ date, events, onClose, onOpenEvent, onCreateEvent, onExport }: Props) {
+  const hasExportable = events.some(
+    e => EXPORT_TYPES.has(e.type) && e.figuration_id && e.figuration_titre
+  )
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -100,12 +107,22 @@ export function DayView({ date, events, onClose, onOpenEvent, onCreateEvent }: P
           </ul>
         )}
 
-        <button
-          onClick={onCreateEvent}
-          className="w-full flex items-center justify-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-3.5 py-2.5 rounded text-[13px] hover:opacity-90"
-        >
-          <Plus size={14} /> Nouvel événement
-        </button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={onCreateEvent}
+            className="flex-1 flex items-center justify-center gap-1.5 bg-[var(--color-ink)] text-[var(--color-parchment)] px-3.5 py-2.5 rounded text-[13px] hover:opacity-90"
+          >
+            <Plus size={14} /> Nouvel événement
+          </button>
+          {hasExportable && (
+            <button
+              onClick={onExport}
+              className="flex-1 flex items-center justify-center gap-1.5 border border-[var(--color-ink)] text-[var(--color-ink)] px-3.5 py-2.5 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
+            >
+              <FileDown size={14} /> Export demandes TP
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
