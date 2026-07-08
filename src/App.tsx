@@ -6,6 +6,7 @@ import { CalendrierView } from './components/CalendrierView'
 import { FigurantsView } from './components/FigurantsView'
 import { COURS } from './data/cours'
 import { api } from './lib/api'
+import { usePolling } from './lib/usePolling'
 
 const FicheEditor = lazy(() =>
   import('./components/FicheEditor').then(m => ({ default: m.FicheEditor }))
@@ -26,7 +27,7 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0)
   const [total, setTotal] = useState<number>(0)
 
-  useEffect(() => {
+  const loadCounts = () => {
     Promise.all(
       COURS.map(c => api.listByCours(c.slug).then(rows => [c.slug, rows.length] as const))
     )
@@ -36,7 +37,10 @@ export default function App() {
         setTotal(Object.values(m).reduce((a, b) => a + b, 0))
       })
       .catch(() => {})
-  }, [refreshKey])
+  }
+
+  useEffect(loadCounts, [refreshKey])
+  usePolling(loadCounts, 20000)
 
   const openCreate = () => setView({ kind: 'create' })
 

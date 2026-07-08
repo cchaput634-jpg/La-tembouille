@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { api } from '@/lib/api'
+import { usePolling } from '@/lib/usePolling'
 import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
@@ -68,6 +69,20 @@ export function CalendrierView({ onOpenFigu }: Props) {
       .catch(e => alert(`Erreur : ${e.message}`))
       .finally(() => setLoading(false))
   }, [monthStart, monthEnd, refreshKey])
+
+  usePolling(() => {
+    api.events
+      .listRange(monthStart, monthEnd)
+      .then(rows => {
+        setEvents(rows)
+        setSelectedEvent(prev => {
+          if (!prev) return prev
+          const fresh = rows.find(r => r.id === prev.id)
+          return fresh ?? null
+        })
+      })
+      .catch(() => {})
+  }, 15000)
 
   const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {}

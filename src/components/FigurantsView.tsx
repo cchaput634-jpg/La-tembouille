@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Plus, Trash2, UserPlus, CalendarX, Users } from 'lucide-react'
 import { api } from '@/lib/api'
+import { usePolling } from '@/lib/usePolling'
 import { DISPO_OPTIONS } from '@/data/dispoStatuts'
 import type {
   AbsenceFigurant,
@@ -40,6 +41,15 @@ export function FigurantsView() {
   }
 
   useEffect(load, [])
+
+  usePolling(() => {
+    Promise.all([api.figurants.list(), api.absences.list()])
+      .then(([figs, abs]) => {
+        setFigurants(figs)
+        setAbsences(abs)
+      })
+      .catch(() => {})
+  }, 15000)
 
   const addFigurant = async () => {
     const nom = newNom.trim()
