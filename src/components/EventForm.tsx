@@ -25,7 +25,6 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
   const [heure, setHeure] = useState<EventHeure>(event?.heure ?? '21:00')
   const [cours, setCours] = useState<string>(event?.cours ?? COURS[0].slug)
   const [professeur, setProfesseur] = useState<string>(event?.professeur ?? '')
-  const [gerantFigu, setGerantFigu] = useState<string>(event?.gerant_figuration ?? '')
   const [nbFigurants, setNbFigurants] = useState<string>(
     event?.nombre_figurants != null ? String(event.nombre_figurants) : ''
   )
@@ -57,7 +56,6 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
       heure,
       cours,
       professeur: professeur.trim(),
-      gerant_figuration: gerantFigu.trim(),
       nombre_figurants: NEEDS_FIGURANTS(type) && nbFigurants ? Number(nbFigurants) : null,
       figuration_id: figurationId || null,
       type,
@@ -154,20 +152,6 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
               value={professeur}
               onChange={e => setProfesseur(e.target.value)}
               placeholder="Nom du professeur"
-              className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
-              style={{ fontFamily: 'var(--font-serif)' }}
-            />
-          </div>
-
-          <div>
-            <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
-              Gérant figuration
-            </label>
-            <input
-              type="text"
-              value={gerantFigu}
-              onChange={e => setGerantFigu(e.target.value)}
-              placeholder="Nom du gérant"
               className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
               style={{ fontFamily: 'var(--font-serif)' }}
             />

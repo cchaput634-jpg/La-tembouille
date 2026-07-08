@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { X, Trash2, BookOpen, Pencil } from 'lucide-react'
 import { api } from '@/lib/api'
 import { typeColor, typeLabel, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
-import type { CalendarEvent } from '@/lib/types'
+import type { CalendarEvent, FigurantPerm } from '@/lib/types'
 import { EventForm } from './EventForm'
 
 interface Props {
@@ -26,6 +26,30 @@ function frenchDate(iso: string): string {
 export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
   const [editing, setEditing] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [figurants, setFigurants] = useState<FigurantPerm[]>([])
+  const [savingGerant, setSavingGerant] = useState(false)
+
+  useEffect(() => {
+    api.figurants
+      .list()
+      .then(setFigurants)
+      .catch(() => setFigurants([]))
+  }, [])
+
+  const changeGerant = async (nom: string) => {
+    const previous = event.gerant_figuration
+    onChanged({ ...event, gerant_figuration: nom })
+    setSavingGerant(true)
+    try {
+      const updated = await api.events.update(event.id, { gerant_figuration: nom })
+      onChanged(updated)
+    } catch (e) {
+      onChanged({ ...event, gerant_figuration: previous })
+      alert(`Sauvegarde échouée : ${(e as Error).message}`)
+    } finally {
+      setSavingGerant(false)
+    }
+  }
 
   const remove = async () => {
     if (!confirm('Supprimer cet événement ?')) return
@@ -100,15 +124,6 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
             </div>
           )}
 
-          {event.gerant_figuration && (
-            <div>
-              <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
-                Gérant figuration
-              </div>
-              <div className="text-[15px]">{event.gerant_figuration}</div>
-            </div>
-          )}
-
           {event.nombre_figurants != null && (
             <div>
               <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
@@ -117,6 +132,32 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
               <div className="text-[15px]">{event.nombre_figurants}</div>
             </div>
           )}
+
+          <div>
+            <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
+              Gérant
+            </div>
+            <select
+              value={event.gerant_figuration}
+              onChange={e => changeGerant(e.target.value)}
+              disabled={savingGerant}
+              className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)] disabled:opacity-60"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            >
+              <option value="">— Aucun —</option>
+              {figurants.map(f => (
+                <option key={f.id} value={f.nom}>
+                  {f.nom}
+                </option>
+              ))}
+              {event.gerant_figuration &&
+                !figurants.some(f => f.nom === event.gerant_figuration) && (
+                  <option value={event.gerant_figuration}>
+                    {event.gerant_figuration} (ancien)
+                  </option>
+                )}
+            </select>
+          </div>
 
           {isEventLate(event) && (
             <div className="border rounded-md p-3.5" style={{ borderColor: LATE_COLOR }}>
