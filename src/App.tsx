@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar'
 import { FigurationList } from './components/FigurationList'
 import { FicheView } from './components/FicheView'
 import { CalendrierView } from './components/CalendrierView'
+import { FigurantsView } from './components/FigurantsView'
 import { COURS } from './data/cours'
 import { api } from './lib/api'
 
@@ -14,7 +15,7 @@ const EditorFallback = () => (
   <div className="text-[13px] opacity-60 italic">Chargement de l'éditeur...</div>
 )
 
-type Section = 'grimoire' | 'calendrier'
+type Section = 'grimoire' | 'calendrier' | 'figurants'
 type View = { kind: 'list' } | { kind: 'create' } | { kind: 'fiche'; id: string }
 
 export default function App() {
@@ -61,7 +62,7 @@ export default function App() {
             )}
           </div>
 
-          <nav className="flex gap-1">
+          <nav className="flex flex-wrap gap-1">
             <button
               onClick={() => {
                 setSection('grimoire')
@@ -87,10 +88,21 @@ export default function App() {
             >
               Calendrier
             </button>
+            <button
+              onClick={() => setSection('figurants')}
+              className={`px-4 py-2 text-[14px] rounded transition-colors ${
+                section === 'figurants'
+                  ? 'bg-[var(--color-ink)] text-[var(--color-parchment)]'
+                  : 'border border-[var(--color-parchment-line)] hover:border-[var(--color-ink)]'
+              }`}
+              style={{ fontFamily: 'var(--font-serif)' }}
+            >
+              Espace Figurant Perm
+            </button>
           </nav>
         </header>
 
-        {section === 'grimoire' ? (
+        {section === 'grimoire' && (
           <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-5 md:gap-8">
             <Sidebar
               active={activeCours}
@@ -139,7 +151,9 @@ export default function App() {
               )}
             </main>
           </div>
-        ) : (
+        )}
+
+        {section === 'calendrier' && (
           <CalendrierView
             onOpenFigu={id => {
               setSection('grimoire')
@@ -147,6 +161,8 @@ export default function App() {
             }}
           />
         )}
+
+        {section === 'figurants' && <FigurantsView />}
       </div>
     </div>
   )

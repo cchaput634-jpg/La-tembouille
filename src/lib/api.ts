@@ -4,6 +4,9 @@ import type {
   FigurationSummary,
   CalendarEvent,
   EventInput,
+  FigurantPerm,
+  AbsenceFigurant,
+  DispoStatut,
 } from './types'
 
 const BASE = '/api'
@@ -63,6 +66,42 @@ export const api = {
 
     remove: (id: string) =>
       fetch(`${BASE}/events/${id}`, { method: 'DELETE' }).then(r => {
+        if (!r.ok) throw new Error('Suppression échouée')
+      }),
+  },
+
+  figurants: {
+    list: () => jsonFetch<FigurantPerm[]>(`${BASE}/figurants`),
+
+    create: (nom: string) =>
+      jsonFetch<FigurantPerm>(`${BASE}/figurants`, {
+        method: 'POST',
+        body: JSON.stringify({ nom }),
+      }),
+
+    setDispo: (id: string, dispo: DispoStatut | null) =>
+      jsonFetch<FigurantPerm>(`${BASE}/figurants/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ dispo }),
+      }),
+
+    remove: (id: string) =>
+      fetch(`${BASE}/figurants/${id}`, { method: 'DELETE' }).then(r => {
+        if (!r.ok) throw new Error('Suppression échouée')
+      }),
+  },
+
+  absences: {
+    list: () => jsonFetch<AbsenceFigurant[]>(`${BASE}/absences`),
+
+    create: (figurant_id: string, date_debut: string, date_fin: string) =>
+      jsonFetch<AbsenceFigurant>(`${BASE}/absences`, {
+        method: 'POST',
+        body: JSON.stringify({ figurant_id, date_debut, date_fin }),
+      }),
+
+    remove: (id: string) =>
+      fetch(`${BASE}/absences/${id}`, { method: 'DELETE' }).then(r => {
         if (!r.ok) throw new Error('Suppression échouée')
       }),
   },

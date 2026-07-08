@@ -29,6 +29,24 @@ export type EventHeure = '21:00' | '21:45'
 export type EventType = 'mapping_only' | 'figuration_only' | 'tp_figuration'
 export type StatutTP = 'fait' | 'en_cours' | 'info_demandee' | 'refuse'
 export type StatutFigu = 'demande_en_cours' | 'full' | 'refusee'
+export type DispoStatut = 'pas_dispo' | 'dispo' | 'dispo_si_besoin'
+
+export interface FigurantPerm {
+  id: string
+  nom: string
+  dispo: DispoStatut | null
+  dispo_date: string | null
+  created_at: number
+}
+
+export interface AbsenceFigurant {
+  id: string
+  figurant_id: string
+  figurant_nom: string | null
+  date_debut: string
+  date_fin: string
+  created_at: number
+}
 
 export interface CalendarEvent {
   id: string

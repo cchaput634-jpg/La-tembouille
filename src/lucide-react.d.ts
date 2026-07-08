@@ -23,4 +23,6 @@ declare module 'lucide-react' {
   export const MapPin: LucideIcon
   export const FileDown: LucideIcon
   export const Users: LucideIcon
+  export const UserPlus: LucideIcon
+  export const CalendarX: LucideIcon
 }

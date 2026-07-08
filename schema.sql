@@ -33,3 +33,22 @@ CREATE TABLE IF NOT EXISTS events (
 
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
 CREATE INDEX IF NOT EXISTS idx_events_cours ON events(cours);
+
+CREATE TABLE IF NOT EXISTS figurants_perm (
+  id TEXT PRIMARY KEY,
+  nom TEXT NOT NULL,
+  dispo TEXT,
+  dispo_date TEXT,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
+CREATE TABLE IF NOT EXISTS absences_figurants (
+  id TEXT PRIMARY KEY,
+  figurant_id TEXT NOT NULL,
+  date_debut TEXT NOT NULL,
+  date_fin TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (figurant_id) REFERENCES figurants_perm(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_absences_figurant ON absences_figurants(figurant_id);
