@@ -14,7 +14,6 @@ interface Props {
   events: CalendarEvent[]
   label: string
   onClose: () => void
-  onOpenFigu: (id: string) => void
 }
 
 const EXPORT_TYPES = new Set(['mapping_only', 'tp_figuration'])
@@ -86,7 +85,7 @@ function LieuBlock({ html }: { html: string }) {
   )
 }
 
-export function ExportView({ events, label, onClose, onOpenFigu }: Props) {
+export function ExportView({ events, label, onClose }: Props) {
   const [statuts, setStatuts] = useState<Record<string, StatutTP | null>>(() =>
     Object.fromEntries(events.map(e => [e.id, e.statut_tp]))
   )
@@ -172,13 +171,12 @@ export function ExportView({ events, label, onClose, onOpenFigu }: Props) {
                   </span>
                 </div>
 
-                <button
-                  onClick={() => onOpenFigu(e.figuration_id!)}
-                  className="text-left text-[16px] break-words leading-snug mb-2.5 hover:underline"
+                <div
+                  className="text-[16px] break-words leading-snug mb-2.5"
                   style={{ fontFamily: 'var(--font-serif)', fontWeight: 600 }}
                 >
                   {eventTitle(e)}
-                </button>
+                </div>
 
                 <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3">
                   <div className="flex items-center gap-1.5 text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">

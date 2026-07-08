@@ -279,10 +279,6 @@ export function CalendrierView({ onOpenFigu }: Props) {
           events={eventsByDate[exportDate] ?? []}
           label={exportDayLabel(exportDate)}
           onClose={() => setExportDate(null)}
-          onOpenFigu={id => {
-            setExportDate(null)
-            onOpenFigu(id)
-          }}
         />
       )}
 
@@ -291,10 +287,6 @@ export function CalendrierView({ onOpenFigu }: Props) {
           events={eventsByDate[exportFiguDate] ?? []}
           label={exportDayLabel(exportFiguDate)}
           onClose={() => setExportFiguDate(null)}
-          onOpenFigu={id => {
-            setExportFiguDate(null)
-            onOpenFigu(id)
-          }}
         />
       )}
     </div>

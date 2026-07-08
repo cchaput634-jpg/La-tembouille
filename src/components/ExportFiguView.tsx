@@ -13,7 +13,6 @@ interface Props {
   events: CalendarEvent[]
   label: string
   onClose: () => void
-  onOpenFigu: (id: string) => void
 }
 
 const EXPORT_TYPES = new Set(['figuration_only', 'tp_figuration'])
@@ -27,7 +26,7 @@ function frenchDate(iso: string): string {
   })
 }
 
-export function ExportFiguView({ events, label, onClose, onOpenFigu }: Props) {
+export function ExportFiguView({ events, label, onClose }: Props) {
   const [statuts, setStatuts] = useState<Record<string, StatutFigu | null>>(() =>
     Object.fromEntries(events.map(e => [e.id, e.statut_figu]))
   )
@@ -113,16 +112,12 @@ export function ExportFiguView({ events, label, onClose, onOpenFigu }: Props) {
                   </span>
                 </div>
 
-                <button
-                  onClick={() =>
-                    e.figuration_id ? onOpenFigu(e.figuration_id) : undefined
-                  }
-                  disabled={!e.figuration_id}
-                  className="text-left text-[16px] break-words leading-snug mb-2.5 hover:underline disabled:no-underline disabled:cursor-default"
+                <div
+                  className="text-[16px] break-words leading-snug mb-2.5"
                   style={{ fontFamily: 'var(--font-serif)', fontWeight: 600 }}
                 >
                   {eventTitle(e)}
-                </button>
+                </div>
 
                 <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3 flex items-center gap-2">
                   <Users size={14} className="opacity-60" />
