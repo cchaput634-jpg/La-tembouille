@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { api } from '@/lib/api'
 import { usePolling } from '@/lib/usePolling'
 import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const DAY_LABELS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+const DAY_LABELS_MOBILE = ['L', 'M', 'M', 'J', 'V', 'S', 'D']
 const MONTH_NAMES = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
@@ -131,24 +132,24 @@ export function CalendrierView({ onOpenFigu }: Props) {
 
   return (
     <div>
-      <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-4 sm:mb-5">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
           <button
             onClick={prevMonth}
-            className="border border-[var(--color-ink)] rounded p-2 hover:bg-[var(--color-parchment-soft)]"
+            className="border border-[var(--color-ink)] rounded p-1.5 sm:p-2 hover:bg-[var(--color-parchment-soft)] flex-shrink-0"
             title="Mois précédent"
           >
             <ChevronLeft size={18} />
           </button>
           <h2
-            className="text-[28px] sm:text-[34px] italic m-0 leading-tight"
+            className="text-[22px] sm:text-[34px] italic m-0 leading-tight capitalize truncate"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             {MONTH_NAMES[month]} {year}
           </h2>
           <button
             onClick={nextMonth}
-            className="border border-[var(--color-ink)] rounded p-2 hover:bg-[var(--color-parchment-soft)]"
+            className="border border-[var(--color-ink)] rounded p-1.5 sm:p-2 hover:bg-[var(--color-parchment-soft)] flex-shrink-0"
             title="Mois suivant"
           >
             <ChevronRight size={18} />
@@ -156,27 +157,32 @@ export function CalendrierView({ onOpenFigu }: Props) {
         </div>
         <button
           onClick={goToday}
-          className="border border-[var(--color-ink)] rounded px-3 py-2 text-[13px] hover:bg-[var(--color-parchment-soft)]"
+          className="border border-[var(--color-ink)] rounded px-2.5 sm:px-3 py-1.5 sm:py-2 text-[12px] sm:text-[13px] hover:bg-[var(--color-parchment-soft)] flex-shrink-0"
         >
           Aujourd'hui
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 mb-2 text-[11px] uppercase tracking-[1.5px] opacity-60">
-        {DAY_LABELS.map(l => (
-          <div key={l} className="text-center py-1">{l}</div>
+      <div className="grid grid-cols-7 gap-[3px] sm:gap-1 mb-1.5 sm:mb-2 text-[10px] sm:text-[11px] uppercase tracking-[1px] sm:tracking-[1.5px] opacity-60">
+        {DAY_LABELS.map((l, i) => (
+          <div key={l + i} className="text-center py-1">
+            <span className="hidden sm:inline">{l}</span>
+            <span className="sm:hidden">{DAY_LABELS_MOBILE[i]}</span>
+          </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-[3px] sm:gap-1">
         {cells.map((cell, i) => {
-          if (!cell) return <div key={i} className="min-h-[80px] sm:min-h-[110px]" />
+          if (!cell) return <div key={i} className="min-h-[52px] sm:min-h-[110px]" />
           const dayEvents = eventsByDate[cell.iso] ?? []
           const isToday = cell.iso === todayISO
+          const visibleDots = dayEvents.slice(0, 4)
+          const extraDots = dayEvents.length - visibleDots.length
           return (
             <div
               key={i}
-              className={`min-h-[80px] sm:min-h-[110px] bg-[var(--color-parchment-soft)] border rounded-md p-1.5 sm:p-2 flex flex-col gap-1 cursor-pointer hover:border-[var(--color-ink)] transition-colors ${
+              className={`min-h-[52px] sm:min-h-[110px] bg-[var(--color-parchment-soft)] border rounded-md p-1 sm:p-2 flex flex-col gap-0.5 sm:gap-1 cursor-pointer hover:border-[var(--color-ink)] transition-colors ${
                 isToday
                   ? 'border-[var(--color-ink)] border-2'
                   : 'border-[var(--color-parchment-line)]'
@@ -185,7 +191,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
             >
               <div className="flex justify-between items-start">
                 <span
-                  className="text-[14px] sm:text-[16px]"
+                  className="text-[13px] sm:text-[16px] leading-none"
                   style={{
                     fontFamily: 'var(--font-serif)',
                     fontWeight: isToday ? 700 : 600,
@@ -193,11 +199,9 @@ export function CalendrierView({ onOpenFigu }: Props) {
                 >
                   {cell.day}
                 </span>
-                {dayEvents.length === 0 && (
-                  <Plus size={12} className="opacity-0 group-hover:opacity-40" />
-                )}
               </div>
-              <div className="flex flex-col gap-0.5">
+
+              <div className="hidden sm:flex flex-col gap-0.5">
                 {dayEvents.map(e => {
                   const label = eventTitle(e)
                   const late = isEventLate(e)
@@ -216,7 +220,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
                       title={`${e.heure} · ${label}${late ? ' · TARDIF' : ''}`}
                     >
                       <span>{e.heure}</span>{' '}
-                      <span className="hidden sm:inline">{label}</span>
+                      <span>{label}</span>
                       {late && (
                         <span
                           className="absolute right-0 top-0 bottom-0 w-[6px]"
@@ -226,6 +230,24 @@ export function CalendrierView({ onOpenFigu }: Props) {
                     </button>
                   )
                 })}
+              </div>
+
+              <div className="sm:hidden flex flex-wrap gap-[3px] items-center mt-auto">
+                {visibleDots.map(e => {
+                  const late = isEventLate(e)
+                  return (
+                    <span
+                      key={e.id}
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{
+                        backgroundColor: late ? LATE_COLOR : typeColor(e.type),
+                      }}
+                    />
+                  )
+                })}
+                {extraDots > 0 && (
+                  <span className="text-[9px] leading-none opacity-70">+{extraDots}</span>
+                )}
               </div>
             </div>
           )
