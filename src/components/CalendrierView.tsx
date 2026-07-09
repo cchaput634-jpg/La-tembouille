@@ -9,6 +9,25 @@ import { EventDetail } from './EventDetail'
 import { DayView } from './DayView'
 import { ExportView } from './ExportView'
 import { ExportFiguView } from './ExportFiguView'
+import { WeekView } from './WeekView'
+
+type CalendarMode = 'mois' | 'semaine'
+
+function startOfWeekMonday(d: Date): Date {
+  const day = d.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  const monday = new Date(d)
+  monday.setDate(d.getDate() + diff)
+  monday.setHours(0, 0, 0, 0)
+  return monday
+}
+
+function isoDate(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 
 interface Props {
   onOpenFigu: (id: string) => void
@@ -48,8 +67,10 @@ function exportDayLabel(iso: string): string {
 
 export function CalendrierView({ onOpenFigu }: Props) {
   const now = new Date()
+  const [mode, setMode] = useState<CalendarMode>('mois')
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth())
+  const [weekStart, setWeekStart] = useState<Date>(startOfWeekMonday(now))
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [formDate, setFormDate] = useState<string | null>(null)
@@ -62,18 +83,29 @@ export function CalendrierView({ onOpenFigu }: Props) {
   const monthStart = toISODate(year, month, 1)
   const monthEnd = toISODate(year, month, daysInMonth(year, month))
 
+  const weekEndDate = useMemo(() => {
+    const d = new Date(weekStart)
+    d.setDate(d.getDate() + 6)
+    return d
+  }, [weekStart])
+  const weekStartISO = isoDate(weekStart)
+  const weekEndISO = isoDate(weekEndDate)
+
+  const [rangeStart, rangeEnd] =
+    mode === 'mois' ? [monthStart, monthEnd] : [weekStartISO, weekEndISO]
+
   useEffect(() => {
     setLoading(true)
     api.events
-      .listRange(monthStart, monthEnd)
+      .listRange(rangeStart, rangeEnd)
       .then(setEvents)
       .catch(e => alert(`Erreur : ${e.message}`))
       .finally(() => setLoading(false))
-  }, [monthStart, monthEnd, refreshKey])
+  }, [rangeStart, rangeEnd, refreshKey])
 
   usePolling(() => {
     api.events
-      .listRange(monthStart, monthEnd)
+      .listRange(rangeStart, rangeEnd)
       .then(rows => {
         setEvents(rows)
         setSelectedEvent(prev => {
@@ -97,29 +129,79 @@ export function CalendrierView({ onOpenFigu }: Props) {
     return map
   }, [events])
 
-  const prevMonth = () => {
-    if (month === 0) {
-      setYear(y => y - 1)
-      setMonth(11)
+  const goPrev = () => {
+    if (mode === 'mois') {
+      if (month === 0) {
+        setYear(y => y - 1)
+        setMonth(11)
+      } else {
+        setMonth(m => m - 1)
+      }
     } else {
-      setMonth(m => m - 1)
+      const d = new Date(weekStart)
+      d.setDate(d.getDate() - 7)
+      setWeekStart(d)
     }
   }
 
-  const nextMonth = () => {
-    if (month === 11) {
-      setYear(y => y + 1)
-      setMonth(0)
+  const goNext = () => {
+    if (mode === 'mois') {
+      if (month === 11) {
+        setYear(y => y + 1)
+        setMonth(0)
+      } else {
+        setMonth(m => m + 1)
+      }
     } else {
-      setMonth(m => m + 1)
+      const d = new Date(weekStart)
+      d.setDate(d.getDate() + 7)
+      setWeekStart(d)
     }
   }
 
   const goToday = () => {
     const t = new Date()
-    setYear(t.getFullYear())
-    setMonth(t.getMonth())
+    if (mode === 'mois') {
+      setYear(t.getFullYear())
+      setMonth(t.getMonth())
+    } else {
+      setWeekStart(startOfWeekMonday(t))
+    }
   }
+
+  const switchMode = (next: CalendarMode) => {
+    if (next === mode) return
+    if (next === 'semaine') {
+      const focus = new Date(year, month, 1)
+      const t = new Date()
+      if (t.getFullYear() === year && t.getMonth() === month) {
+        setWeekStart(startOfWeekMonday(t))
+      } else {
+        setWeekStart(startOfWeekMonday(focus))
+      }
+    } else {
+      setYear(weekStart.getFullYear())
+      setMonth(weekStart.getMonth())
+    }
+    setMode(next)
+  }
+
+  const headerLabel = useMemo(() => {
+    if (mode === 'mois') return `${MONTH_NAMES[month]} ${year}`
+    const s = weekStart
+    const e = weekEndDate
+    const sDay = s.getDate()
+    const eDay = e.getDate()
+    const sMonth = MONTH_NAMES[s.getMonth()]
+    const eMonth = MONTH_NAMES[e.getMonth()]
+    if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+      return `${sDay} — ${eDay} ${eMonth} ${e.getFullYear()}`
+    }
+    if (s.getFullYear() === e.getFullYear()) {
+      return `${sDay} ${sMonth} — ${eDay} ${eMonth} ${e.getFullYear()}`
+    }
+    return `${sDay} ${sMonth} ${s.getFullYear()} — ${eDay} ${eMonth} ${e.getFullYear()}`
+  }, [mode, year, month, weekStart, weekEndDate])
 
   const offset = firstDayOffset(year, month)
   const nbDays = daysInMonth(year, month)
@@ -135,34 +217,59 @@ export function CalendrierView({ onOpenFigu }: Props) {
       <div className="flex flex-wrap justify-between items-center gap-2 mb-4 sm:mb-5">
         <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
           <button
-            onClick={prevMonth}
+            onClick={goPrev}
             className="border border-[var(--color-ink)] rounded p-1.5 sm:p-2 hover:bg-[var(--color-parchment-soft)] flex-shrink-0"
-            title="Mois précédent"
+            title={mode === 'mois' ? 'Mois précédent' : 'Semaine précédente'}
           >
             <ChevronLeft size={18} />
           </button>
           <h2
-            className="text-[22px] sm:text-[34px] italic m-0 leading-tight capitalize truncate"
+            className="text-[20px] sm:text-[30px] italic m-0 leading-tight capitalize truncate"
             style={{ fontFamily: 'var(--font-display)' }}
           >
-            {MONTH_NAMES[month]} {year}
+            {headerLabel}
           </h2>
           <button
-            onClick={nextMonth}
+            onClick={goNext}
             className="border border-[var(--color-ink)] rounded p-1.5 sm:p-2 hover:bg-[var(--color-parchment-soft)] flex-shrink-0"
-            title="Mois suivant"
+            title={mode === 'mois' ? 'Mois suivant' : 'Semaine suivante'}
           >
             <ChevronRight size={18} />
           </button>
         </div>
-        <button
-          onClick={goToday}
-          className="border border-[var(--color-ink)] rounded px-2.5 sm:px-3 py-1.5 sm:py-2 text-[12px] sm:text-[13px] hover:bg-[var(--color-parchment-soft)] flex-shrink-0"
-        >
-          Aujourd'hui
-        </button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="inline-flex border border-[var(--color-ink)] rounded overflow-hidden">
+            <button
+              onClick={() => switchMode('mois')}
+              className={`px-2.5 sm:px-3 py-1.5 sm:py-2 text-[12px] sm:text-[13px] transition-colors ${
+                mode === 'mois'
+                  ? 'bg-[var(--color-ink)] text-[var(--color-parchment)]'
+                  : 'hover:bg-[var(--color-parchment-soft)]'
+              }`}
+            >
+              Mois
+            </button>
+            <button
+              onClick={() => switchMode('semaine')}
+              className={`px-2.5 sm:px-3 py-1.5 sm:py-2 text-[12px] sm:text-[13px] transition-colors border-l border-[var(--color-ink)] ${
+                mode === 'semaine'
+                  ? 'bg-[var(--color-ink)] text-[var(--color-parchment)]'
+                  : 'hover:bg-[var(--color-parchment-soft)]'
+              }`}
+            >
+              Semaine
+            </button>
+          </div>
+          <button
+            onClick={goToday}
+            className="border border-[var(--color-ink)] rounded px-2.5 sm:px-3 py-1.5 sm:py-2 text-[12px] sm:text-[13px] hover:bg-[var(--color-parchment-soft)]"
+          >
+            Aujourd'hui
+          </button>
+        </div>
       </div>
 
+      {mode === 'mois' && (
       <div className="grid grid-cols-7 gap-[3px] sm:gap-1 mb-1.5 sm:mb-2 text-[10px] sm:text-[11px] uppercase tracking-[1px] sm:tracking-[1.5px] opacity-60">
         {DAY_LABELS.map((l, i) => (
           <div key={l + i} className="text-center py-1">
@@ -171,7 +278,9 @@ export function CalendrierView({ onOpenFigu }: Props) {
           </div>
         ))}
       </div>
+      )}
 
+      {mode === 'mois' && (
       <div className="grid grid-cols-7 gap-[3px] sm:gap-1">
         {cells.map((cell, i) => {
           if (!cell) return <div key={i} className="min-h-[52px] sm:min-h-[110px]" />
@@ -253,6 +362,17 @@ export function CalendrierView({ onOpenFigu }: Props) {
           )
         })}
       </div>
+      )}
+
+      {mode === 'semaine' && (
+        <WeekView
+          weekStart={weekStart}
+          eventsByDate={eventsByDate}
+          todayISO={todayISO}
+          onCellClick={iso => setDayViewDate(iso)}
+          onEventClick={e => setSelectedEvent(e)}
+        />
+      )}
 
       {loading && (
         <div className="mt-3 text-[12px] opacity-60 italic">Chargement du mois...</div>
