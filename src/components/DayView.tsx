@@ -1,4 +1,4 @@
-import { X, Plus, FileDown, Users } from 'lucide-react'
+import { X, Plus, FileDown, Users, ClipboardList } from 'lucide-react'
 import { typeColor, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
 import type { CalendarEvent } from '@/lib/types'
 
@@ -10,6 +10,7 @@ interface Props {
   onCreateEvent: () => void
   onExportTP: () => void
   onExportFigu: () => void
+  onRecap: () => void
 }
 
 const EXPORT_TP_TYPES = new Set(['mapping_only', 'tp_figuration'])
@@ -34,11 +35,13 @@ export function DayView({
   onCreateEvent,
   onExportTP,
   onExportFigu,
+  onRecap,
 }: Props) {
   const hasExportTP = events.some(
     e => EXPORT_TP_TYPES.has(e.type) && e.figuration_id && e.figuration_titre
   )
   const hasExportFigu = events.some(e => EXPORT_FIGU_TYPES.has(e.type))
+  const hasEvents = events.length > 0
 
   return (
     <div
@@ -125,6 +128,14 @@ export function DayView({
           >
             <Plus size={14} /> Nouvel événement
           </button>
+          {hasEvents && (
+            <button
+              onClick={onRecap}
+              className="flex items-center justify-center gap-1.5 border border-[var(--color-ink)] text-[var(--color-ink)] px-3.5 py-2.5 rounded text-[13px] hover:bg-[var(--color-parchment-soft)]"
+            >
+              <ClipboardList size={14} /> Récap du jour
+            </button>
+          )}
           {(hasExportTP || hasExportFigu) && (
             <div className="flex flex-col sm:flex-row gap-2">
               {hasExportTP && (

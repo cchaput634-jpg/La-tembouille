@@ -7,6 +7,7 @@ import type { CalendarEvent } from '@/lib/types'
 import { EventForm } from './EventForm'
 import { EventDetail } from './EventDetail'
 import { DayView } from './DayView'
+import { DayRecap } from './DayRecap'
 import { ExportView } from './ExportView'
 import { ExportFiguView } from './ExportFiguView'
 import { WeekView } from './WeekView'
@@ -78,6 +79,7 @@ export function CalendrierView({ onOpenFigu }: Props) {
   const [dayViewDate, setDayViewDate] = useState<string | null>(null)
   const [exportDate, setExportDate] = useState<string | null>(null)
   const [exportFiguDate, setExportFiguDate] = useState<string | null>(null)
+  const [recapDate, setRecapDate] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const monthStart = toISODate(year, month, 1)
@@ -402,6 +404,19 @@ export function CalendrierView({ onOpenFigu }: Props) {
             setDayViewDate(null)
             setExportFiguDate(d)
           }}
+          onRecap={() => {
+            const d = dayViewDate
+            setDayViewDate(null)
+            setRecapDate(d)
+          }}
+        />
+      )}
+
+      {recapDate && (
+        <DayRecap
+          date={recapDate}
+          events={eventsByDate[recapDate] ?? []}
+          onClose={() => setRecapDate(null)}
         />
       )}
 

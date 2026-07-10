@@ -25,4 +25,5 @@ declare module 'lucide-react' {
   export const Users: LucideIcon
   export const UserPlus: LucideIcon
   export const CalendarX: LucideIcon
+  export const ClipboardList: LucideIcon
 }
