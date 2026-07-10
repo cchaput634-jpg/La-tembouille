@@ -1,6 +1,7 @@
 import { X } from 'lucide-react'
-import { typeColor, typeLabel, eventTitle, isEventLate, LATE_COLOR } from '@/data/eventTypes'
-import type { CalendarEvent } from '@/lib/types'
+import { typeColor, isEventLate, LATE_COLOR } from '@/data/eventTypes'
+import { coursNom } from '@/data/cours'
+import type { CalendarEvent, EventType } from '@/lib/types'
 
 interface Props {
   date: string
@@ -8,14 +9,53 @@ interface Props {
   onClose: () => void
 }
 
-function frenchDate(iso: string): string {
+const WEEKDAYS = [
+  'dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi',
+]
+
+const MONTHS_SHORT = [
+  'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+  'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
+]
+
+function shortHeader(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number)
-  return new Date(y, m - 1, d).toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
+  const date = new Date(y, m - 1, d)
+  return `${WEEKDAYS[date.getDay()]} ${d} ${MONTHS_SHORT[m - 1]} ${y}`
+}
+
+function endTime(start: string): string {
+  const [h, m] = start.split(':').map(Number)
+  const total = h * 60 + m + 30
+  const endH = Math.floor(total / 60) % 24
+  const endM = total % 60
+  return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
+}
+
+function slashTitle(e: CalendarEvent): string {
+  const parts: string[] = [coursNom(e.cours)]
+  if (e.figuration_titre) parts.push(e.figuration_titre)
+  if (e.professeur) parts.push(e.professeur)
+  if (e.gerant_figuration) parts.push(e.gerant_figuration)
+  return parts.join(' / ')
+}
+
+function metaLabel(e: CalendarEvent): string {
+  const n = e.nombre_figurants
+  switch (e.type as EventType) {
+    case 'mapping_only':
+      return 'Mapping Only'
+    case 'figuration_only':
+      return n != null
+        ? `${n} figurant${n > 1 ? 's' : ''}`
+        : 'Figuration Only'
+    case 'tp_figuration':
+      return n != null
+        ? `${n} figurant${n > 1 ? 's' : ''} + TP`
+        : 'TP + Figuration'
+    default:
+      return ''
+  }
 }
 
 export function DayRecap({ date, events, onClose }: Props) {
@@ -28,7 +68,7 @@ export function DayRecap({ date, events, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-[var(--color-parchment)] border border-[var(--color-parchment-line)] rounded-xl w-full max-w-[560px] max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--color-parchment)] border border-[var(--color-parchment-line)] rounded-xl w-full max-w-[720px] max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-end pt-2 pr-2">
@@ -41,105 +81,55 @@ export function DayRecap({ date, events, onClose }: Props) {
           </button>
         </div>
 
-        <div className="px-6 pb-6 pt-1">
-          <div className="text-center pb-5 border-b border-[var(--color-ink)]/30 mb-5">
-            <div className="text-[11px] tracking-[3px] uppercase opacity-60 mb-1">
-              La Tambouille d'Elixir
-            </div>
-            <h3
-              className="text-[26px] italic m-0 leading-tight capitalize"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              {frenchDate(date)}
-            </h3>
-            <div className="text-[12px] opacity-70 mt-1.5">
-              {sorted.length} événement{sorted.length > 1 ? 's' : ''} programmé
-              {sorted.length > 1 ? 's' : ''}
-            </div>
-          </div>
+        <div className="px-5 sm:px-7 pb-6 pt-1">
+          <h3
+            className="text-[18px] sm:text-[20px] m-0 mb-4 lowercase first-letter:capitalize"
+            style={{ fontFamily: 'var(--font-serif)', fontWeight: 600 }}
+          >
+            <span style={{ fontWeight: 500 }}>{shortHeader(date).split(' ')[0]}</span>
+            <span> </span>
+            <span>{shortHeader(date).split(' ').slice(1).join(' ')}</span>
+          </h3>
 
           {sorted.length === 0 ? (
-            <div className="text-[14px] opacity-60 italic text-center py-8">
+            <div className="text-[14px] opacity-60 italic py-6 text-center">
               Aucun événement.
             </div>
           ) : (
-            <ol className="flex flex-col gap-3 list-none p-0 m-0">
+            <div
+              className="grid gap-x-3 sm:gap-x-5 gap-y-1.5 text-[13px] sm:text-[14px]"
+              style={{
+                gridTemplateColumns: 'auto minmax(0, 1fr) auto',
+                fontFamily: 'var(--font-serif)',
+              }}
+            >
               {sorted.map(e => {
                 const late = isEventLate(e)
+                const color = late ? LATE_COLOR : typeColor(e.type)
                 return (
-                  <li
-                    key={e.id}
-                    className="relative overflow-hidden bg-[var(--color-parchment-soft)] border rounded-md px-4 py-3"
-                    style={{
-                      borderColor: late ? LATE_COLOR : 'var(--color-parchment-line)',
-                    }}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex flex-col items-center flex-shrink-0 pt-0.5">
-                        <div
-                          className="text-[18px] font-bold leading-none"
-                          style={{
-                            fontFamily: 'var(--font-serif)',
-                            color: late ? LATE_COLOR : 'var(--color-ink)',
-                          }}
-                        >
-                          {e.heure.replace(':', 'h')}
-                        </div>
-                        <span
-                          className="mt-1.5 inline-block w-3 h-3 rounded"
-                          style={{ backgroundColor: typeColor(e.type) }}
-                          title={typeLabel(e.type)}
-                        />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div
-                          className="text-[16px] break-words leading-snug"
-                          style={{
-                            fontFamily: 'var(--font-serif)',
-                            fontWeight: 600,
-                            color: late ? LATE_COLOR : undefined,
-                          }}
-                        >
-                          {eventTitle(e)}
-                        </div>
-                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[12px] opacity-80">
-                          <span>{typeLabel(e.type)}</span>
-                          {e.nombre_figurants != null && (
-                            <span>
-                              · {e.nombre_figurants} figurant
-                              {e.nombre_figurants > 1 ? 's' : ''}
-                            </span>
-                          )}
-                          {late && (
-                            <span
-                              className="uppercase font-semibold tracking-[1px]"
-                              style={{ color: LATE_COLOR }}
-                            >
-                              · Tardif
-                            </span>
-                          )}
-                        </div>
-                        {late && e.motif_retard && (
-                          <div
-                            className="mt-1.5 text-[12px] italic"
-                            style={{ color: LATE_COLOR }}
-                          >
-                            « {e.motif_retard} »
-                          </div>
-                        )}
-                      </div>
+                  <div key={e.id} className="contents">
+                    <div
+                      className="tabular-nums whitespace-nowrap"
+                      style={{ fontWeight: 500 }}
+                    >
+                      {e.heure} — {endTime(e.heure)}
                     </div>
-                    {late && (
-                      <span
-                        className="absolute right-0 top-0 bottom-0 w-[5px]"
-                        style={{ backgroundColor: typeColor(e.type) }}
-                      />
-                    )}
-                  </li>
+                    <div
+                      className="break-words"
+                      style={{ color, fontWeight: 600 }}
+                    >
+                      {slashTitle(e)}
+                    </div>
+                    <div
+                      className="whitespace-nowrap text-right opacity-90"
+                      style={{ fontWeight: 500 }}
+                    >
+                      ({metaLabel(e)})
+                    </div>
+                  </div>
                 )
               })}
-            </ol>
+            </div>
           )}
         </div>
       </div>
