@@ -119,7 +119,7 @@ export function ExportFiguView({ events, label, onClose }: Props) {
                   {eventTitle(e)}
                 </div>
 
-                <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3 flex items-center gap-2">
+                <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3 flex flex-wrap items-center gap-2">
                   <Users size={14} className="opacity-60" />
                   <span className="text-[14px]">
                     {e.nombre_figurants != null ? (
@@ -134,6 +134,18 @@ export function ExportFiguView({ events, label, onClose }: Props) {
                       </span>
                     )}
                   </span>
+                  {e.staff_only === 1 && (
+                    <span
+                      className="inline-block px-2 py-[2px] rounded text-[11px] uppercase tracking-[1.5px]"
+                      style={{
+                        backgroundColor: 'var(--color-ink)',
+                        color: 'var(--color-parchment)',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Staff only
+                    </span>
+                  )}
                 </div>
 
                 <div className="border-t border-[var(--color-parchment-line)] pt-2.5">

@@ -63,6 +63,7 @@ export interface CalendarEvent {
   motif_retard: string | null
   statut_tp: StatutTP | null
   statut_figu: StatutFigu | null
+  staff_only: number
   created_at: number
 }
 
@@ -78,4 +79,5 @@ export interface EventInput {
   motif_retard?: string | null
   statut_tp?: StatutTP | null
   statut_figu?: StatutFigu | null
+  staff_only?: number
 }

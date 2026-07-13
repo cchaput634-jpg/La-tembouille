@@ -129,7 +129,21 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
               <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
                 Nombre de figurants
               </div>
-              <div className="text-[15px]">{event.nombre_figurants}</div>
+              <div className="text-[15px]">
+                {event.nombre_figurants}
+                {event.staff_only === 1 && (
+                  <span
+                    className="ml-2 inline-block px-2 py-[2px] rounded text-[11px] uppercase tracking-[1.5px]"
+                    style={{
+                      backgroundColor: 'var(--color-ink)',
+                      color: 'var(--color-parchment)',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Staff only
+                  </span>
+                )}
+              </div>
             </div>
           )}
 

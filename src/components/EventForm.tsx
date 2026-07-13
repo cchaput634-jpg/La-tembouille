@@ -30,6 +30,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
   )
   const [figurationId, setFigurationId] = useState<string>(event?.figuration_id ?? '')
   const [type, setType] = useState<EventType>(event?.type ?? 'mapping_only')
+  const [staffOnly, setStaffOnly] = useState<boolean>(event?.staff_only === 1)
   const [motifRetard, setMotifRetard] = useState<string>(event?.motif_retard ?? '')
   const [figurations, setFigurations] = useState<FigurationSummary[]>([])
   const [saving, setSaving] = useState(false)
@@ -59,6 +60,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
       nombre_figurants: NEEDS_FIGURANTS(type) && nbFigurants ? Number(nbFigurants) : null,
       figuration_id: figurationId || null,
       type,
+      staff_only: NEEDS_FIGURANTS(type) && staffOnly ? 1 : 0,
       motif_retard: isLate ? motifRetard.trim() : event?.motif_retard ?? null,
     }
     try {
@@ -200,20 +202,34 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
           </div>
 
           {NEEDS_FIGURANTS(type) && (
-            <div>
-              <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
-                Nombre de figurants
+            <>
+              <div>
+                <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+                  Nombre de figurants
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={nbFigurants}
+                  onChange={e => setNbFigurants(e.target.value)}
+                  placeholder="0"
+                  className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
+                  style={{ fontFamily: 'var(--font-serif)' }}
+                />
+              </div>
+
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={staffOnly}
+                  onChange={e => setStaffOnly(e.target.checked)}
+                  className="w-4 h-4 accent-[var(--color-ink)]"
+                />
+                <span className="text-[14px]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Staff only
+                </span>
               </label>
-              <input
-                type="number"
-                min="0"
-                value={nbFigurants}
-                onChange={e => setNbFigurants(e.target.value)}
-                placeholder="0"
-                className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
-                style={{ fontFamily: 'var(--font-serif)' }}
-              />
-            </div>
+            </>
           )}
 
           {isLate && (

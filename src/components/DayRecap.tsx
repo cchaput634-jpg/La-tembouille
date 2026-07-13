@@ -42,17 +42,18 @@ function slashTitle(e: CalendarEvent): string {
 
 function metaLabel(e: CalendarEvent): string {
   const n = e.nombre_figurants
+  const staff = e.staff_only === 1 ? ' · Staff only' : ''
   switch (e.type as EventType) {
     case 'mapping_only':
       return 'Mapping Only'
     case 'figuration_only':
-      return n != null
+      return (n != null
         ? `${n} figurant${n > 1 ? 's' : ''}`
-        : 'Figuration Only'
+        : 'Figuration Only') + staff
     case 'tp_figuration':
-      return n != null
+      return (n != null
         ? `${n} figurant${n > 1 ? 's' : ''} + TP`
-        : 'TP + Figuration'
+        : 'TP + Figuration') + staff
     default:
       return ''
   }
