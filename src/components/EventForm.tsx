@@ -48,6 +48,10 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
   }, [cours, event])
 
   const save = async () => {
+    if (!figurationId) {
+      alert('Une figuration associée est obligatoire.')
+      return
+    }
     if (isLate && !motifRetard.trim()) {
       alert('Motif du retard requis pour un événement à moins de 48h.')
       return
@@ -177,7 +181,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
 
           <div>
             <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
-              Figuration associée
+              Figuration associée <span className="opacity-70 normal-case tracking-normal">— requise</span>
             </label>
             <select
               value={figurationId}
@@ -185,7 +189,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
               className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
               style={{ fontFamily: 'var(--font-serif)' }}
             >
-              <option value="">— Aucune —</option>
+              <option value="">— Sélectionner une figuration —</option>
               {figurations.map(f => (
                 <option key={f.id} value={f.id}>{f.titre}</option>
               ))}
