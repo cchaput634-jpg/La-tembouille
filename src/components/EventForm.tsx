@@ -31,6 +31,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
   const [figurationId, setFigurationId] = useState<string>(event?.figuration_id ?? '')
   const [type, setType] = useState<EventType>(event?.type ?? 'mapping_only')
   const [staffOnly, setStaffOnly] = useState<boolean>(event?.staff_only === 1)
+  const [emplacementDepart, setEmplacementDepart] = useState<string>(event?.emplacement_depart ?? '')
   const [motifRetard, setMotifRetard] = useState<string>(event?.motif_retard ?? '')
   const [figurations, setFigurations] = useState<FigurationSummary[]>([])
   const [saving, setSaving] = useState(false)
@@ -61,6 +62,7 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
       figuration_id: figurationId || null,
       type,
       staff_only: NEEDS_FIGURANTS(type) && staffOnly ? 1 : 0,
+      emplacement_depart: emplacementDepart.trim(),
       motif_retard: isLate ? motifRetard.trim() : event?.motif_retard ?? null,
     }
     try {
@@ -154,6 +156,20 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
               value={professeur}
               onChange={e => setProfesseur(e.target.value)}
               placeholder="Nom du professeur"
+              className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+              Emplacement de départ
+            </label>
+            <input
+              type="text"
+              value={emplacementDepart}
+              onChange={e => setEmplacementDepart(e.target.value)}
+              placeholder="Lieu de départ (RDV, coordonnées, salle...)"
               className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
               style={{ fontFamily: 'var(--font-serif)' }}
             />

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { X, ChevronDown, ChevronUp, MapPin } from 'lucide-react'
+import { X, ChevronDown, ChevronUp, MapPin, Navigation } from 'lucide-react'
 import { api } from '@/lib/api'
 import { coursNom } from '@/data/cours'
 import {
@@ -177,6 +177,17 @@ export function ExportView({ events, label, onClose }: Props) {
                 >
                   {eventTitle(e)}
                 </div>
+
+                {e.emplacement_depart && (
+                  <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3">
+                    <div className="flex items-center gap-1.5 text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
+                      <Navigation size={12} /> Emplacement de départ
+                    </div>
+                    <div className="text-[14px] break-words">
+                      {e.emplacement_depart}
+                    </div>
+                  </div>
+                )}
 
                 <div className="border-t border-[var(--color-parchment-line)] pt-2.5 mb-3">
                   <div className="flex items-center gap-1.5 text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">

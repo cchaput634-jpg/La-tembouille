@@ -64,6 +64,7 @@ export interface CalendarEvent {
   statut_tp: StatutTP | null
   statut_figu: StatutFigu | null
   staff_only: number
+  emplacement_depart: string
   created_at: number
 }
 
@@ -80,4 +81,5 @@ export interface EventInput {
   statut_tp?: StatutTP | null
   statut_figu?: StatutFigu | null
   staff_only?: number
+  emplacement_depart?: string
 }

@@ -124,6 +124,15 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
             </div>
           )}
 
+          {event.emplacement_depart && (
+            <div>
+              <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
+                Emplacement de départ
+              </div>
+              <div className="text-[15px]">{event.emplacement_depart}</div>
+            </div>
+          )}
+
           {event.nombre_figurants != null && (
             <div>
               <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
