@@ -10,6 +10,7 @@ export const COURS = [
   { slug: 'metamorphose', nom: 'Métamorphose' },
   { slug: 'divination', nom: 'Divination' },
   { slug: 'botanique', nom: 'Botanique' },
+  { slug: 'vol', nom: 'Vol' },
 ] as const
 
 export type CoursSlug = typeof COURS[number]['slug']
