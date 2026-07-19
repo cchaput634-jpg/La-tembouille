@@ -65,6 +65,7 @@ export interface CalendarEvent {
   statut_figu: StatutFigu | null
   staff_only: number
   emplacement_depart: string
+  accompagnateur: string
   created_at: number
 }
 
@@ -82,4 +83,5 @@ export interface EventInput {
   statut_figu?: StatutFigu | null
   staff_only?: number
   emplacement_depart?: string
+  accompagnateur?: string
 }

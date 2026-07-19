@@ -28,6 +28,7 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
   const [deleting, setDeleting] = useState(false)
   const [figurants, setFigurants] = useState<FigurantPerm[]>([])
   const [savingGerant, setSavingGerant] = useState(false)
+  const [savingAcc, setSavingAcc] = useState(false)
 
   useEffect(() => {
     api.figurants
@@ -48,6 +49,21 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
       alert(`Sauvegarde échouée : ${(e as Error).message}`)
     } finally {
       setSavingGerant(false)
+    }
+  }
+
+  const changeAccompagnateur = async (nom: string) => {
+    const previous = event.accompagnateur
+    onChanged({ ...event, accompagnateur: nom })
+    setSavingAcc(true)
+    try {
+      const updated = await api.events.update(event.id, { accompagnateur: nom })
+      onChanged(updated)
+    } catch (e) {
+      onChanged({ ...event, accompagnateur: previous })
+      alert(`Sauvegarde échouée : ${(e as Error).message}`)
+    } finally {
+      setSavingAcc(false)
     }
   }
 
@@ -177,6 +193,32 @@ export function EventDetail({ event, onClose, onChanged, onOpenFigu }: Props) {
                 !figurants.some(f => f.nom === event.gerant_figuration) && (
                   <option value={event.gerant_figuration}>
                     {event.gerant_figuration} (ancien)
+                  </option>
+                )}
+            </select>
+          </div>
+
+          <div>
+            <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-1">
+              Accompagnateur
+            </div>
+            <select
+              value={event.accompagnateur}
+              onChange={e => changeAccompagnateur(e.target.value)}
+              disabled={savingAcc}
+              className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)] disabled:opacity-60"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            >
+              <option value="">— Aucun —</option>
+              {figurants.map(f => (
+                <option key={f.id} value={f.nom}>
+                  {f.nom}
+                </option>
+              ))}
+              {event.accompagnateur &&
+                !figurants.some(f => f.nom === event.accompagnateur) && (
+                  <option value={event.accompagnateur}>
+                    {event.accompagnateur} (ancien)
                   </option>
                 )}
             </select>

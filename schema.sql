@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS events (
   statut_figu TEXT,
   staff_only INTEGER NOT NULL DEFAULT 0,
   emplacement_depart TEXT NOT NULL DEFAULT '',
+  accompagnateur TEXT NOT NULL DEFAULT '',
   created_at INTEGER NOT NULL DEFAULT (unixepoch())
 );
 

@@ -14,6 +14,7 @@ const FIELDS = [
   'statut_figu',
   'staff_only',
   'emplacement_depart',
+  'accompagnateur',
 ] as const
 type Field = typeof FIELDS[number]
 

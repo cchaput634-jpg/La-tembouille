@@ -14,6 +14,7 @@ interface Body {
   statut_figu?: string | null
   staff_only?: number
   emplacement_depart?: string
+  accompagnateur?: string
 }
 
 const SELECT_WITH_JOIN = `
@@ -45,8 +46,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
   }
   const id = crypto.randomUUID()
   await env.DB.prepare(
-    `INSERT INTO events (id, date, heure, cours, professeur, gerant_figuration, nombre_figurants, figuration_id, type, motif_retard, statut_tp, statut_figu, staff_only, emplacement_depart)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO events (id, date, heure, cours, professeur, gerant_figuration, nombre_figurants, figuration_id, type, motif_retard, statut_tp, statut_figu, staff_only, emplacement_depart, accompagnateur)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       id,
@@ -62,7 +63,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
       body.statut_tp ?? null,
       body.statut_figu ?? null,
       body.staff_only ?? 0,
-      body.emplacement_depart ?? ''
+      body.emplacement_depart ?? '',
+      body.accompagnateur ?? ''
     )
     .run()
   const row = await env.DB
