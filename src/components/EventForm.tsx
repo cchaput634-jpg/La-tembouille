@@ -52,6 +52,17 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
       alert('Une figuration associée est obligatoire.')
       return
     }
+    if (NEEDS_FIGURANTS(type)) {
+      const n = Number(nbFigurants)
+      if (!nbFigurants || Number.isNaN(n) || n < 1) {
+        alert('Nombre de figurants requis (entre 1 et 3) pour ce type de demande.')
+        return
+      }
+      if (n > 3) {
+        alert('Le nombre de figurants ne peut pas dépasser 3.')
+        return
+      }
+    }
     if (isLate && !motifRetard.trim()) {
       alert('Motif du retard requis pour un événement à moins de 48h.')
       return
@@ -225,14 +236,21 @@ export function EventForm({ date, event, onClose, onSaved }: Props) {
             <>
               <div>
                 <label className="block text-[11px] tracking-[2px] uppercase opacity-70 mb-1.5">
-                  Nombre de figurants
+                  Nombre de figurants <span className="opacity-70 normal-case tracking-normal">— requis (1 à 3)</span>
                 </label>
                 <input
                   type="number"
-                  min="0"
+                  min="1"
+                  max="3"
                   value={nbFigurants}
-                  onChange={e => setNbFigurants(e.target.value)}
-                  placeholder="0"
+                  onChange={e => {
+                    const v = e.target.value
+                    if (v === '') { setNbFigurants(''); return }
+                    const n = Number(v)
+                    if (Number.isNaN(n)) return
+                    setNbFigurants(String(Math.min(3, Math.max(1, Math.floor(n)))))
+                  }}
+                  placeholder="1"
                   className="w-full bg-[var(--color-parchment-soft)] border border-[var(--color-parchment-line)] rounded px-3 py-2 text-[14px] focus:outline-none focus:border-[var(--color-ink)]"
                   style={{ fontFamily: 'var(--font-serif)' }}
                 />
