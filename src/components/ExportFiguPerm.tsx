@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react'
 import { api } from '@/lib/api'
 import { usePolling } from '@/lib/usePolling'
@@ -55,6 +55,7 @@ export function ExportFiguPerm() {
   const [focus, setFocus] = useState<Date>(new Date())
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
+  const fetchGen = useRef(0)
 
   const { rangeStart, rangeEnd, label } = useMemo(() => {
     if (mode === 'mois') {
@@ -79,18 +80,29 @@ export function ExportFiguPerm() {
   }, [mode, focus])
 
   useEffect(() => {
+    const gen = ++fetchGen.current
+    setEvents([])
     setLoading(true)
     api.events
       .listRange(rangeStart, rangeEnd)
-      .then(setEvents)
-      .catch(() => setEvents([]))
-      .finally(() => setLoading(false))
+      .then(rows => {
+        if (gen === fetchGen.current) setEvents(rows)
+      })
+      .catch(() => {
+        if (gen === fetchGen.current) setEvents([])
+      })
+      .finally(() => {
+        if (gen === fetchGen.current) setLoading(false)
+      })
   }, [rangeStart, rangeEnd])
 
   usePolling(() => {
+    const gen = fetchGen.current
     api.events
       .listRange(rangeStart, rangeEnd)
-      .then(setEvents)
+      .then(rows => {
+        if (gen === fetchGen.current) setEvents(rows)
+      })
       .catch(() => {})
   }, 20000)
 
