@@ -234,7 +234,48 @@ export function ExportFiguPerm() {
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 pb-5 border-b border-[var(--color-parchment-line)]">
+        <div>
+          <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-3">
+            Figurants demandés par matière
+          </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div className="flex-shrink-0">
+              <PieChart data={matiereChart} size={160} />
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              {matiereChart.length === 0 ? (
+                <div className="text-[12px] italic opacity-60">Aucune donnée.</div>
+              ) : (
+                <PieLegend data={matiereChart} />
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-3">
+            Participations des figurants perm
+          </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div className="flex-shrink-0">
+              <PieChart data={permChart} size={160} />
+            </div>
+            <div className="flex-1 min-w-0 w-full">
+              {permChart.length === 0 ? (
+                <div className="text-[12px] italic opacity-60">Aucune donnée.</div>
+              ) : (
+                <PieLegend data={permChart} />
+              )}
+            </div>
+          </div>
+          <div className="text-[11px] opacity-60 italic mt-2">
+            Une participation = être gérant ou accompagnateur d'un événement figuration.
+          </div>
+        </div>
+      </div>
+
+      <div>
         <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-2">
           Historique par jour
         </div>
@@ -289,47 +330,6 @@ export function ExportFiguPerm() {
             ))}
           </div>
         )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-[var(--color-parchment-line)]">
-        <div>
-          <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-3">
-            Figurants demandés par matière
-          </div>
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className="flex-shrink-0">
-              <PieChart data={matiereChart} size={160} />
-            </div>
-            <div className="flex-1 min-w-0 w-full">
-              {matiereChart.length === 0 ? (
-                <div className="text-[12px] italic opacity-60">Aucune donnée.</div>
-              ) : (
-                <PieLegend data={matiereChart} />
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-3">
-            Participations des figurants perm
-          </div>
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <div className="flex-shrink-0">
-              <PieChart data={permChart} size={160} />
-            </div>
-            <div className="flex-1 min-w-0 w-full">
-              {permChart.length === 0 ? (
-                <div className="text-[12px] italic opacity-60">Aucune donnée.</div>
-              ) : (
-                <PieLegend data={permChart} />
-              )}
-            </div>
-          </div>
-          <div className="text-[11px] opacity-60 italic mt-2">
-            Une participation = être gérant ou accompagnateur d'un événement figuration.
-          </div>
-        </div>
       </div>
     </section>
   )
