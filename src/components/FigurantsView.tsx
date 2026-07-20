@@ -8,6 +8,7 @@ import type {
   DispoStatut,
   FigurantPerm,
 } from '@/lib/types'
+import { ExportFiguPerm } from './ExportFiguPerm'
 
 function frenchDate(iso: string): string {
   const [y, m, d] = iso.split('-').map(Number)
@@ -297,6 +298,8 @@ export function FigurantsView() {
           </ul>
         )}
       </section>
+
+      <ExportFiguPerm />
     </div>
   )
 }
