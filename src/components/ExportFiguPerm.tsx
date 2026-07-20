@@ -115,9 +115,8 @@ export function ExportFiguPerm() {
 
   const matiereChart = useMemo(() => {
     const counts: Record<string, number> = {}
-    for (const e of figuEvents) {
-      const n = e.nombre_figurants ?? 0
-      counts[e.cours] = (counts[e.cours] ?? 0) + n
+    for (const e of events) {
+      counts[e.cours] = (counts[e.cours] ?? 0) + 1
     }
     return COURS
       .filter(c => (counts[c.slug] ?? 0) > 0)
@@ -126,7 +125,7 @@ export function ExportFiguPerm() {
         value: counts[c.slug],
         color: paletteColor(i),
       }))
-  }, [figuEvents])
+  }, [events])
 
   const permChart = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -237,7 +236,7 @@ export function ExportFiguPerm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6 pb-5 border-b border-[var(--color-parchment-line)]">
         <div>
           <div className="text-[11px] tracking-[2px] uppercase opacity-70 mb-3">
-            Figurants demandés par matière
+            Demandes par matière <span className="opacity-70 normal-case tracking-normal">— tous types</span>
           </div>
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
             <div className="flex-shrink-0">
